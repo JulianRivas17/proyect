@@ -1,0 +1,54 @@
+.login-page, .register-page {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+  }
+  
+  .login-container, .register-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+  }
+  
+  .login-image, .register-image {
+    width: 50%;
+    height: 100%;
+  }
+  
+  .login-image img, .register-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  p {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .submit-button {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .extra-options {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .extra-options a {
+    color: #4CAF50;
+    text-decoration: none;
+  }
+  
