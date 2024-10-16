@@ -1,10 +1,13 @@
 import React from 'react';
 import { Formik, Field, Form } from 'formik';
-import { Button, Input } from 'antd';
+import { Button, Input, message } from 'antd';  // Importamos 'message' para mostrar notificaciones
 import './register.css';
 import registerImage from '../../assets/images/login.png';
+import { registerUser } from '../../services/authService';  // Importamos el servicio
+import { useNavigate } from 'react-router-dom';  // Importamos useNavigate
 
 const Register = () => {
+    const navigate = useNavigate();
     return (
         <div className="register-page">
             <div className="register-container">
@@ -12,11 +15,21 @@ const Register = () => {
                 <p>Completa los campos para crear tu cuenta</p>
                 <Formik
                     initialValues={{ name: '', email: '', password: '' }}
-                    onSubmit={(values) => {
-                        console.log('Register values', values);
+                    onSubmit={async (values, { setSubmitting }) => {
+                        try {
+                            const response = await registerUser(values);  // Llamamos al servicio
+                            console.log('Respuesta del servidor:', response);  // Muestra la respuesta
+                            message.success('Usuario registrado exitosamente');
+                            navigate('/');
+                        } catch (error: any) {  // Capturamos cualquier error
+                            message.error(error.message);  // Mostramos el mensaje de error específico
+                        } finally {
+                            setSubmitting(false);  // Terminamos la operación de envío
+                        }
                     }}
+                    
                 >
-                    {() => (
+                    {({ isSubmitting }) => (
                         <Form>
                             <div className="form-group">
                                 <label htmlFor="name">Nombre</label>
@@ -42,7 +55,14 @@ const Register = () => {
                                     )}
                                 </Field>
                             </div>
-                            <Button type="primary" htmlType="submit" className="submit-button">Registrarse</Button>
+                            <Button 
+                                type="primary" 
+                                htmlType="submit" 
+                                className="submit-button"
+                                loading={isSubmitting}  // Muestra el loader si está enviando
+                            >
+                                Registrarse
+                            </Button>
                         </Form>
                     )}
                 </Formik>

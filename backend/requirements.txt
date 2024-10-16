@@ -1,3 +1,5 @@
-Django>=4.0,<5.0
-djangorestframework
-psycopg2-binary
+Django>=4.1  # Versión base de Django
+djangorestframework  # Para crear APIs REST
+djangorestframework-simplejwt  # Para manejar la autenticación con JWT
+psycopg2-binary  # Conector de PostgreSQL para Django
+django-cors-headers  # Para habilitar CORS en Django
