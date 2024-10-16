@@ -1,5 +1,9 @@
 // src/services/authService.ts
+import jwt_decode from 'jwt-decode';
 
+interface DecodedToken {
+  exp: number;
+}
 export interface RegisterValues {
   name: string;
   email: string;
@@ -30,3 +34,25 @@ export const registerUser = async (values: RegisterValues) => {
   return await response.json();
 };
 
+export const isAuthenticated = (): boolean => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const decoded: DecodedToken = jwt_decode(token);
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp < currentTime) {
+      console.warn('Token expirado');
+      localStorage.removeItem('token'); 
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error al decodificar el token', error);
+    localStorage.removeItem('token');
+    return false;
+  }
+};
