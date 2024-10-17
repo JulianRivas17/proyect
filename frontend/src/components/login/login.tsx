@@ -1,29 +1,39 @@
 import React from 'react';
 import { Formik, Field, Form } from 'formik';
-import { Button, Input } from 'antd';
+import { Button, Input, message } from 'antd';
 import './login.css';
 import registerImage from '../../assets/images/login.png';
-
+import { loginUser } from '../../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="login-page">
       <div className="login-container">
         <h2>¡Bienvenido de nuevo!</h2>
         <p>Ingresa tus credenciales para acceder a tu cuenta</p>
         <Formik
-          initialValues={{ email: '', password: '' }}
-          onSubmit={(values) => {
-            console.log('Login values', values);
+          initialValues={{ username: '', password: '' }}
+          onSubmit={async (values) => {
+            try {
+              const data = await loginUser(values.username, values.password);
+              localStorage.setItem('token', data.access);
+              message.success('Inicio de sesión exitoso');
+              navigate('/home');
+            } catch (error) {
+              message.error('Error al iniciar sesión, verifica tus credenciales');
+            }
           }}
         >
           {() => (
             <Form>
               <div className="form-group">
-                <label htmlFor="email">Correo electrónico</label>
-                <Field name="email">
+                <label htmlFor="username">Nombre de usuario</label>
+                <Field name="username">
                   {({ field }: any) => (
-                    <Input {...field} placeholder="Ingresa tu email" />
+                    <Input {...field} placeholder="Ingresa tu nombre de usuario" />
                   )}
                 </Field>
               </div>

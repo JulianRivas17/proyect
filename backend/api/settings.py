@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -46,6 +47,10 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
@@ -102,11 +107,10 @@ DATABASES = {
         'NAME': 'brunette_db',      # Nombre de la base de datos
         'USER': 'brunette',          # Usuario
         'PASSWORD': '1234',          # Contraseña
-        'HOST': 'localhost',         # O la dirección de tu servidor de base de datos
+        'HOST': os.getenv('DB_HOST', 'localhost'), 
         'PORT': '5432',              # Puerto por defecto de PostgreSQL
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

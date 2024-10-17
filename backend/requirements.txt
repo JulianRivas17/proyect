@@ -1,5 +1,5 @@
-Django>=4.1  # Versión base de Django
-djangorestframework  # Para crear APIs REST
-djangorestframework-simplejwt  # Para manejar la autenticación con JWT
-psycopg2-binary  # Conector de PostgreSQL para Django
-django-cors-headers  # Para habilitar CORS en Django
+Django>=4.1
+djangorestframework
+djangorestframework-simplejwt
+psycopg2-binary
+django-cors-headers  # Asegúrate de que esta línea esté aquí

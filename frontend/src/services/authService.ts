@@ -1,4 +1,3 @@
-// src/services/authService.ts
 import jwt_decode from 'jwt-decode';
 
 interface DecodedToken {
@@ -10,7 +9,7 @@ export interface RegisterValues {
   password: string;
 }
 
-const API_URL = 'http://localhost:8000';  // Cambia la URL según sea necesario
+const API_URL = 'http://localhost:8000';
 
 export const registerUser = async (values: RegisterValues) => {
   const response = await fetch(`${API_URL}/register/`, {
@@ -19,7 +18,7 @@ export const registerUser = async (values: RegisterValues) => {
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          username: values.name,     // En el backend espera 'username'
+          username: values.name,
           email: values.email,
           password: values.password,
           first_name: '',
@@ -54,5 +53,30 @@ export const isAuthenticated = (): boolean => {
     console.error('Error al decodificar el token', error);
     localStorage.removeItem('token');
     return false;
+  }
+};
+
+export const loginUser = async (username: string, password: string) => {
+  try {
+    const response = await fetch('http://localhost:8000/api/token/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username, 
+        password: password,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error en la autenticación, verifica tus credenciales');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error en el inicio de sesión:', error);
+    throw error;
   }
 };
