@@ -7,6 +7,7 @@ import Register from '../components/register/register';
 import ProtectedRoute from '../components/ProtectedRoute';
 import AppHeader from '../components/header/Header';
 import Ventas from '../components/ventas/ventas';
+import Users from '../components/users/users';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const AppRoutes = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Home />} />
           <Route path='/ventas' element={<Ventas />}/>
+          <Route path='/users' element={<Users />}/>
           {/* Agrega más rutas protegidas aquí */}
         </Route>
       </Routes>
