@@ -7,3 +7,43 @@
     font-size: 2rem;
   }
   
+  /* src/pages/home.css */
+
+.sider {
+  background: #f4f5f7;
+  padding: 20px;
+}
+
+.filters-card {
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.filters-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.clear-filters-button {
+  margin-bottom: 10px;
+  background-color: #51971A;
+  border-color: #51971A;
+}
+
+.search-input {
+  margin-bottom: 20px;
+}
+
+.chart-card {
+  height: 300px; /* Altura ajustable para tus gráficos */
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.layout-content {
+  margin-top: 20px;
+}

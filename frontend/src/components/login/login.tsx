@@ -21,7 +21,7 @@ const Login = () => {
               const data = await loginUser(values.username, values.password);
               localStorage.setItem('token', data.access);
               message.success('Inicio de sesión exitoso');
-              navigate('/home');
+              navigate('/dashboard');
             } catch (error) {
               message.error('Error al iniciar sesión, verifica tus credenciales');
             }
