@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Card, Button, Table, Breadcrumb} from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ExportOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import './users.css';
 import { MenuOutlined } from '@ant-design/icons';
@@ -55,9 +56,9 @@ const Users: React.FC = () => {
     return (
         <div style={{ marginTop: '4rem'}}>
             <div className="container-bread-crumb" style={{display: 'flex', alignItems: 'center', padding:'15px 0px'}}>
-                            <MenuOutlined style={{ fontSize: '14px', marginRight: '8px' }} />
+                            <MenuOutlined style={{ fontSize: '14px', marginRight: '8px', cursor: 'pointer' }} />
                             <Breadcrumb>
-                                <Breadcrumb.Item>Inicio</Breadcrumb.Item>
+                                <Breadcrumb.Item><Link to="/dashboard">Inicio</Link></Breadcrumb.Item>
                                 <Breadcrumb.Item className="item-focus">Gestión de Empleados</Breadcrumb.Item>
                             </Breadcrumb>
             </div>
@@ -70,7 +71,7 @@ const Users: React.FC = () => {
                 </div> 
             </div>    
             
-            <Layout style={{ minHeight: '65vh', overflow: 'hidden'}}>
+            <Layout style={{ minHeight: '100vh', overflow: 'hidden'}}>
                 <Sider width={250} className="sider">
                     <Card title="Filtros" bordered={false} className="filters-card">
                         <Button type="primary" className="clear-filters-button">Limpiar filtros</Button>
