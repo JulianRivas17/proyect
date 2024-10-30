@@ -27,7 +27,8 @@ services:
       DB_PASS: 1234
     command: >
       sh -c "python manage.py wait_for_db &&
-             python manage.py migrate api &&
+             python manage.py makemigrations api &&
+             python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
 
   frontend:
