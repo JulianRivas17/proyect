@@ -41,7 +41,10 @@
 }
 
 .css-dev-only-do-not-override-1hpnbz2 .ant-menu-dark.ant-menu-horizontal > .ant-menu-item:hover{
-    background-color: #3a6d12 !important; /* Fondo amarillo en hover */
-    color: #000 !important; /* Color del texto en hover (opcional) */
+    background-color: #3a6d12 !important;
+    color: #fff !important; 
 }
 
+.ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled):hover {
+    background: #3a6d12 !important;
+}
