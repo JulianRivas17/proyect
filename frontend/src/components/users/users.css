@@ -90,3 +90,7 @@ h1 {
 .ant-table-wrapper .ant-table-pagination-right {
     justify-content: center; /* Centra el contenido en el lado derecho de la paginación */
 }
+
+.ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled):hover {
+    background: #3a6d12 !important;
+}
