@@ -23,12 +23,16 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Login />} />
 
-        {/* Rutas protegidas */}
-        <Route element={<ProtectedRoute />}>
+        {/* Rutas protegidas solo para Gerente */}
+        <Route element={<ProtectedRoute requiredGroup="Gerente" />}>
           <Route path="/dashboard" element={<Home />} />
-          <Route path='/ventas' element={<Ventas />}/>
-          <Route path='/users' element={<Users />}/>
-          {/* Agrega más rutas protegidas aquí */}
+          <Route path="/users" element={<Users />} />
+        </Route>
+
+        {/* Rutas protegidas para cualquier usuario autenticado */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/ventas" element={<Ventas />} />
+          <Route path="/caja" element={<Ventas />} />
         </Route>
       </Routes>
     </>

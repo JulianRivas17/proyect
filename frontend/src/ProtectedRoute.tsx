@@ -7,28 +7,20 @@ interface DecodedToken {
   group?: string;
 }
 
-// Define las propiedades que puede aceptar `ProtectedRoute`
-interface ProtectedRouteProps {
-  requiredGroup?: string;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredGroup }) => {
+const ProtectedRoute: React.FC<{ requiredGroup?: string }> = ({ requiredGroup }) => {
   const token = localStorage.getItem('token');
 
   if (!token) {
-    // Redirige a la página de inicio de sesión si no hay token
     return <Navigate to="/" />;
   }
 
   try {
     const decoded: DecodedToken = jwt_decode(token);
-
-    // Si se requiere un grupo específico y el usuario no pertenece a ese grupo, redirige
     if (requiredGroup && decoded.group !== requiredGroup) {
-      return <Navigate to="/ventas" />;
+      return <Navigate to="/" />;
     }
 
-    return <Outlet />; // Muestra la ruta protegida si el usuario cumple los requisitos
+    return <Outlet />;
   } catch (error) {
     console.error("Error al decodificar el token", error);
     return <Navigate to="/" />;

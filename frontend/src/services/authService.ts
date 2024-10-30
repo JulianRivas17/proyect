@@ -80,3 +80,22 @@ export const loginUser = async (username: string, password: string) => {
     throw error;
   }
 };
+
+
+interface DecodedToken {
+  group?: string;
+}
+
+export const getUserGroupFromToken = (): string | null => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const decoded: DecodedToken = jwt_decode(token);
+      return decoded.group || null;
+    } catch (error) {
+      console.error("Error al decodificar el token", error);
+      return null;
+    }
+  }
+  return null;
+};
