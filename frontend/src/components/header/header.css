@@ -1,0 +1,46 @@
+.container-logo, .horizontal-menu {
+    width: 100%;
+    position: fixed;
+    z-index: 2;
+}
+
+.horizontal-menu {
+    margin-top: 4rem;
+    background-color: #f4f5f7;
+}
+
+.container-logo .logo {
+    color: #51971A; 
+    font-size: 24px; 
+    font-weight: bold; 
+    background: #f4f5f7; 
+    text-align: left; 
+    padding-left: 20px;
+    margin-right: 0px !important;
+}
+
+.horizontal-menu .menu-custom{
+    background-Color: #51971A;
+    display: flex;
+    justify-Content: left;
+    margin: 0px 20px;
+    border-radius: 0px 0px 10px 10px;
+}
+
+.menu-custom .menu-item-custom {
+    border-right: 1px solid #f4f5f7;
+    width: 200px;
+}
+
+.css-dev-only-do-not-override-1hpnbz2 .ant-menu-dark.ant-menu-horizontal > .ant-menu-item-selected,
+.css-dev-only-do-not-override-1hpnbz2 .ant-menu-dark > .ant-menu.ant-menu-horizontal > .ant-menu-item-selected,
+.css-dev-only-do-not-override-1hpnbz2 .ant-menu-dark.ant-menu-horizontal > .ant-menu-submenu-selected,
+.css-dev-only-do-not-override-1hpnbz2 .ant-menu-dark > .ant-menu.ant-menu-horizontal > .ant-menu-submenu-selected {
+    color: #fff !important; 
+    background-color: #3a6d12 !important; 
+}
+
+.css-dev-only-do-not-override-1hpnbz2 .ant-menu-dark.ant-menu-horizontal > .ant-menu-item:hover{
+    background-color: #3a6d12 !important; /* Fondo amarillo en hover */
+    color: #000 !important; /* Color del texto en hover (opcional) */
+}

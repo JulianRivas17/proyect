@@ -2,21 +2,26 @@
 import React from 'react';
 import { Menu, Layout } from 'antd';
 import { Link } from 'react-router-dom';
+import './header.css';
 
 const { Header } = Layout;
 
 const AppHeader: React.FC = () => {
   return (
-    <Header style={{ background: '#51971A', padding: '0 20px', display: 'flex', alignItems: 'center' }}>
-      <div className="logo" style={{ color: '#fff', fontSize: '24px', fontWeight: 'bold', marginRight: '20px' }}>
-        Brunette
+    <Header style={{ background: '#f4f5f7', padding: 0, display: 'block' }}>
+      <div className="container-logo">
+        <div className="logo">
+          Brunnete
+        </div>
       </div>
-      <Menu theme="dark" mode="horizontal" style={{ backgroundColor: '#51971A', flexGrow: 1 }}>
-        <Menu.Item key="1"><Link to="/dashboard">Dashboard</Link></Menu.Item>
-        <Menu.Item key="2"><Link to="/ventas">Ventas</Link></Menu.Item>
-        <Menu.Item key="3"><Link to="/caja">Caja</Link></Menu.Item>
-        <Menu.Item key="4"><Link to="/usuarios">Gestión de Usuarios</Link></Menu.Item>
-      </Menu>
+      <div className="horizontal-menu">
+        <Menu className="menu-custom" theme="dark" mode="horizontal">
+          <Menu.Item className="menu-item-custom" key="1"><Link to="/dashboard" style={{ color: '#fff' }}>Dashboard</Link></Menu.Item>
+          <Menu.Item className="menu-item-custom" key="2"><Link to="/ventas" style={{ color: '#fff' }}>Ventas</Link></Menu.Item>
+          <Menu.Item className="menu-item-custom" key="3"><Link to="/caja" style={{ color: '#fff' }}>Caja</Link></Menu.Item>
+          <Menu.Item className="menu-item-custom" key="4"><Link to="/users" style={{ color: '#fff' }}>Gestión de Usuarios</Link></Menu.Item>
+        </Menu>
+      </div>
     </Header>
   );
 };
