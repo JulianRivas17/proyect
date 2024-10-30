@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Layout, Card, Button, Table } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, ExportOutlined } from '@ant-design/icons';
+import { Layout, Card, Button, Table, Breadcrumb } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined, ExportOutlined, MenuOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import './ventas.css';
 
@@ -56,20 +56,34 @@ const Ventas: React.FC = () => {
     ];
 
     return (
-        <Layout style={{ minHeight: '100vh', overflow: 'hidden' }}>
-            <Sider width={250} className="sider">
-                <Card title="Filtros" bordered={false} className="filters-card">
-                    <Button type="primary" className="clear-filters-button">Limpiar filtros</Button>
-                </Card>
-            </Sider>
+        <div style={{ marginTop: '4rem'}}>
+            <div className="container-bread-crumb" style={{display: 'flex', alignItems: 'center', padding:'15px 0px'}}>
+                            <MenuOutlined style={{ fontSize: '14px', marginRight: '8px' }} />
+                            <Breadcrumb>
+                                <Breadcrumb.Item>Inicio</Breadcrumb.Item>
+                                <Breadcrumb.Item className="item-focus">Ventas</Breadcrumb.Item>
+                            </Breadcrumb>
+            </div>
+            <div className="container-head-dash" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <div className="title-screen">
+                Ventas
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
+                    <Button className='add-button' icon={<ExportOutlined />}>Exportar Data</Button>
+                    <Button className='add-button' type="primary" icon={<PlusOutlined />}>Añadir Venta</Button>
+                </div> 
+            </div>    
+            
+            <Layout style={{ minHeight: '65vh', overflow: 'hidden'}}>
+                <Sider width={250} className="sider">
+                    <Card title="Filtros" bordered={false} className="filters-card">
+                        <Button type="primary" className="clear-filters-button">Limpiar filtros</Button>
+                    </Card>
+                </Sider>
 
-            <Layout className="layout-content">
-                <Content style={{ padding: '24px' }}>
-                    <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-                        <Button className='butom-export' icon={<ExportOutlined />}>Exportar Data</Button>
-                        <Button className='add-button' type="primary" icon={<PlusOutlined />}>Añadir Venta</Button>
-                    </div>
-                    <Table
+                <Layout className="layout-content">
+                    <Content style={{ padding: '0px 20px', marginTop: '-20px'}}>
+                        <Table
                         columns={columns}
                         dataSource={data}
                         rowKey="key"
@@ -86,9 +100,10 @@ const Ventas: React.FC = () => {
                         }}
                         onChange={handleTableChange}
                     />
-                </Content>
+                    </Content>
+                </Layout>
             </Layout>
-        </Layout>
+        </div>
     );
 };
 

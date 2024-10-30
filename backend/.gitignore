@@ -1,0 +1,7 @@
+# Ignora carpetas y archivos de caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*.cpython-*

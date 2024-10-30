@@ -1,8 +1,8 @@
 // src/pages/home.tsx
 import React, { useState } from 'react';
-import { Layout, Card, Button, Input, Row, Col, DatePicker, Tag } from 'antd';
+import { Layout, Card, Button, Input, Row, Col, DatePicker, Tag, Breadcrumb } from 'antd';
 import './home.css';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, MenuOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 const { Sider, Content } = Layout;
@@ -25,38 +25,28 @@ const Home: React.FC = () => {
   };
 
   return (
-    <>
-      <Layout style={{ minHeight: '100vh', overflow: 'hidden' }}>
-        {/* Barra lateral para filtros */}
-        <Sider width={250} className="sider">
-          <Card title="Filtros" bordered={false} className="filters-card">
-            <h4 className="filters-title">Filtros aplicados</h4>
-            <Button type="primary" className="clear-filters-button">
-              Limpiar filtros
-            </Button>
-
-            {/* Etiquetas de filtros aplicados */}
-            <div className="date-filters">
-              {dateFilters.map((filter, index) => (
-                <Tag
-                  key={index}
-                  closable
-                  onClose={() => handleRemoveDateFilter(index)}
-                  icon={<CloseCircleOutlined />}
-                  color="green"
-                >
-                  {moment(filter.start).format('YYYY-MM-DD')} - {moment(filter.end).format('YYYY-MM-DD')}
-                </Tag>
-              ))}
+    <div style={{ marginTop: '4rem'}}>
+        <div className="container-bread-crumb" style={{display: 'flex', alignItems: 'center', padding:'15px 0px'}}>
+                        <MenuOutlined style={{ fontSize: '14px', marginRight: '8px' }} />
+                        <Breadcrumb>
+                            <Breadcrumb.Item>Inicio</Breadcrumb.Item>
+                            <Breadcrumb.Item className="item-focus">Dashboard</Breadcrumb.Item>
+                        </Breadcrumb>
+        </div>
+        <div className="container-head-dash" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+            <div className="title-screen">
+            Dashboard
             </div>
+        </div>    
+        
+        <Layout style={{ minHeight: '65vh', overflow: 'hidden'}}>
+            <Sider width={250} className="sider">
+                <Card title="Filtros" bordered={false} className="filters-card">
+                    <Button type="primary" className="clear-filters-button">Limpiar filtros</Button>
+                </Card>
+            </Sider>
 
-            <RangePicker onChange={handleDateChange} style={{ marginBottom: '10px' }} />
-          </Card>
-        </Sider>
-
-        {/* Contenido principal para gráficos */}
-        <Layout className="layout-content">
-          <Content>
+            <Content>
             <Row gutter={[16, 16]}>
               <Col span={12}>
                 <Card title="Gráfico de Barras" className="chart-card">
@@ -80,10 +70,12 @@ const Home: React.FC = () => {
               </Col>
             </Row>
           </Content>
-        </Layout>
-      </Layout>
-    </>
-  );
+            </Layout>
+
+    </div>
+);
+
+
 };
 
 export default Home;
