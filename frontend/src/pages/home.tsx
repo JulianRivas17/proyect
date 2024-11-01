@@ -117,10 +117,6 @@ const Home: React.FC = () => {
         },
       },
     },
-    legend: {
-      data: ['Servicio A', 'Servicio B', 'Servicio C'],
-      top: 'bottom',
-    },
     xAxis: {
       type: 'category',
       boundaryGap: false,
