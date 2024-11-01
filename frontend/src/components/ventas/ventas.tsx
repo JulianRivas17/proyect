@@ -47,7 +47,7 @@ const Ventas: React.FC = () => {
         { title: 'Turno', dataIndex: 'turno', key: 'turno', filters: [{ text: 'Mañana', value: 'Mañana' }, { text: 'Tarde', value: 'Tarde' }, { text: 'Noche', value: 'Noche' }], onFilter: (value: any, record: any) => record.turno.includes(value) },
         {
             title: 'Opciones', key: 'opciones', render: (_: any, record: any) => (
-                <span>
+                <span >
                     <Button icon={<EditOutlined />} type="link" onClick={() => console.log('Editar', record)} />
                     <Button icon={<DeleteOutlined />} type="link" danger onClick={() => console.log('Eliminar', record)} />
                 </span>

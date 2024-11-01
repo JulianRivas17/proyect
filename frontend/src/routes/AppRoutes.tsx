@@ -7,6 +7,10 @@ import Register from '../components/register/register';
 import ProtectedRoute from '../components/ProtectedRoute';
 import AppHeader from '../components/header/Header';
 import Ventas from '../components/ventas/ventas';
+import CajaTemp from '../components/CajaTemp/CajaTemp';
+
+
+
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -26,6 +30,8 @@ const AppRoutes = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Home />} />
           <Route path='/ventas' element={<Ventas />}/>
+          <Route path='/caja' element={<CajaTemp/>}/> 
+          
           {/* Agrega más rutas protegidas aquí */}
         </Route>
       </Routes>
