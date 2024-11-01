@@ -47,7 +47,7 @@ const columns: TableColumnsType<DataType> = [
   {title: 'Monto Final', dataIndex: 'montoFin'},
   {title: 'Opciones', key: 'opciones', render: (_: any, record: any) => (
     <span>
-        <Button icon={<DeleteOutlined />} type="link" danger onClick={() => console.log('Eliminar', record)} />
+        <Button icon={<DeleteOutlined style={{ marginRight: '30px' }}/>} type="link" danger onClick={() => console.log('Eliminar', record)} />
         <Button className='add-button' onClick={() => console.log('Editar', record)}>Detalle Venta</Button>
         
     </span>
@@ -56,8 +56,8 @@ const columns: TableColumnsType<DataType> = [
 
 const data: DataType[] = [
   {key: '1',fecha: moment().format('DD/MM/YYYY'),turno:"Mañana",estado: 'abierta', montoIni: 100000 , montoFin: 500000 }, //ver como poner fecha
-  {key: '2',fecha: moment().subtract(1, 'days').format('DD/MM/YYYY') ,turno:"Mañana",estado: 'abierta', montoIni: 100000 , montoFin: 500000},
-  {key: '3',fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'),turno:"Mañana",estado: 'abierta', montoIni: 100000 , montoFin: 500000},
+  {key: '2',fecha: moment().subtract(1, 'month').format('DD/MM/YYYY') ,turno:"Mañana",estado: 'abierta', montoIni: 100000 , montoFin: 500000},
+  {key: '3',fecha: moment().subtract(2, 'year').format('DD/MM/YYYY'),turno:"Mañana",estado: 'abierta', montoIni: 100000 , montoFin: 500000},
   {key: '4',fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'),turno:"Mañana",estado: 'abierta', montoIni: 100000 , montoFin: 500000},
   {key: '5',fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'),turno:"Tarde",estado: 'abierta', montoIni: 100000 , montoFin: 500000},
   {key: '6',fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'),turno:"Tarde",estado: 'abierta', montoIni: 100000 , montoFin: 500000},
@@ -95,8 +95,8 @@ const CajaTemp: React.FC = () => {
           <Layout>
             <Content style={{ padding: '24px' }}>
               <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-                  <Button className='butom-export' icon={<PlusCircleOutlined />}>Monto Inicial</Button>
-                  <Button className='open-box' type="primary" icon={<PlusCircleOutlined />}>Abrir Caja</Button>
+                  <Button className='button-init-amount' icon={<PlusCircleOutlined />}>Monto Inicial</Button>
+                  <Button className='open-box' icon={<PlusCircleOutlined />}>Abrir Caja</Button>
               </div>
               <Divider />
               <Table<DataType>
