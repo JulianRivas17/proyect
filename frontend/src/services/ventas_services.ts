@@ -1,0 +1,124 @@
+// services/ventas_services.ts
+import axios from 'axios';
+import dayjs, { Dayjs } from 'dayjs';
+
+interface Producto {
+    id: number; 
+    nombre: string;
+    cantidad: number;
+}
+
+
+interface VentaData {
+    fecha: Dayjs | null;
+    productos: Producto[];
+    turno: string;
+    montoTotal: number;
+}
+
+
+const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL_2 = 'http://localhost:8000/';
+
+
+export const crearVenta = async (ventaData: VentaData) => {
+    try {
+        const token = localStorage.getItem('token'); // Obtén el token del localStorage
+
+        const payload = {
+            fecha: ventaData.fecha ? ventaData.fecha.format('YYYY-MM-DD') : null,
+            hora_venta: dayjs().format('HH:mm:ss'), // Hora actual
+            productos: ventaData.productos.map(p => ({
+                producto: p.id, // Cambia `p.nombre` a `p.id` para enviar el ID del producto
+                cantidad: p.cantidad,
+            })),
+            turno: ventaData.turno,
+            monto_total: ventaData.montoTotal,
+        };
+
+        const response = await axios.post(
+            `${BASE_URL_2}ventas/crear-venta/`,
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        return response.data; 
+    } catch (error) {
+        console.error("Error al crear la venta:", error);
+        throw error; 
+    }
+};
+
+interface ProductoDisponible {
+    id: number;
+    nombre_prod: string;
+    precio_prod: number; 
+}
+
+export const obtenerProductos = async (): Promise<ProductoDisponible[]> => {
+    try {
+        // Obtén el token del localStorage
+        const token = localStorage.getItem('token'); // Asegúrate de que el nombre sea correcto
+
+        // Configura los encabezados de autorización
+        const response = await axios.get(`${BASE_URL_2}productos/`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return response.data; 
+    } catch (error) {
+        console.error("Error al obtener los productos:", error);
+        throw error;
+    }
+};
+
+interface VentaResponse {
+    id: number;
+    fecha: string;
+    turno: string;
+    monto_total: number;
+    productos: { producto: string; cantidad: number, nombre_producto: string }[];
+}
+
+export const obtenerVentas = async (page: number, pageSize: number): Promise<{ results: VentaResponse[]; count: number }> => {
+    try {
+        const token = localStorage.getItem('token'); // Obtén el token del localStorage
+
+        const response = await axios.get(`${BASE_URL_2}ventas/listar-ventas/`, {
+            params: {
+                page: page,
+                page_size: pageSize,
+            },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return response.data; // Devuelve los resultados y el total de elementos
+    } catch (error) {
+        console.error("Error al obtener las ventas:", error);
+        throw error;
+    }
+};
+
+
+export const eliminarVenta = async (id: number) => {
+    try {
+        const token = localStorage.getItem('token'); 
+        const response = await axios.delete(`${BASE_URL_2}ventas/${id}/eliminar/`, {
+            headers: {
+                Authorization: `Bearer ${token}`, 
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al eliminar la venta:", error);
+        throw error;
+    }
+};
