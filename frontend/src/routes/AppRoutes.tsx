@@ -9,11 +9,12 @@ import AppHeader from '../components/header/Header';
 import Ventas from '../components/ventas/ventas';
 import Users from '../components/users/users';
 import CajaTemp from '../components/caja/caja';
+import LandingPage from '../components/public/landingPage'; //Añadi ruta de landing
 
 const AppRoutes = () => {
   const location = useLocation();
 
-  const hideHeaderPaths = ['/', '/register'];
+  const hideHeaderPaths = ['/', '/register', '/landing']; //Añadi ruta de landing
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
 
   return (
@@ -23,6 +24,7 @@ const AppRoutes = () => {
         {/* Rutas públicas */}
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Login />} />
+        <Route path="/landing" element={<LandingPage />} />
 
         {/* Rutas protegidas solo para Gerente */}
         <Route element={<ProtectedRoute requiredGroup="Gerente" />}>
