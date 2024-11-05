@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Input, Select, DatePicker, Button, message } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
+import { obtenerProductos, obtenerVentaPorId, editarVenta } from '../../../services/ventas_services';
 import dayjs, { Dayjs } from 'dayjs';
-import { obtenerProductos, crearVenta } from '../../../services/ventas_services';
 
 const { Option } = Select;
 
 interface Producto {
-    id: number; // Añadir el ID del producto
+    id: number;
     nombre: string;
     cantidad: number;
     precio: number;
@@ -19,26 +19,53 @@ interface ProductoDisponible {
     precio_prod: number;
 }
 
-interface AddVentaModalProps {
-    visible: boolean;
-    onCancel: () => void;
-    onSave: (fecha: Dayjs | null, productos: Producto[], turno: string, montoTotal: number) => void;
+interface EditVentaModalProps {
+    ventaId: number;
+    onEditComplete: () => void; // Se llama cuando la edición se complete para recargar los datos en el componente principal
 }
 
-const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave }) => {
+const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete }) => {
+    const [visible, setVisible] = useState<boolean>(true); // Control interno de visibilidad
     const [fecha, setFecha] = useState<Dayjs | null>(null);
     const [productos, setProductos] = useState<Producto[]>([]);
     const [turno, setTurno] = useState<string>('');
     const [montoTotal, setMontoTotal] = useState<number>(0);
-    const [selectedProductId, setSelectedProductId] = useState<number | null>(null); // Cambia a ID
+    const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
     const [productosDisponibles, setProductosDisponibles] = useState<ProductoDisponible[]>([]);
 
     useEffect(() => {
-        if (visible) {
-            cargarProductos();
+        cargarVenta(ventaId);
+        cargarProductos();
+    }, [ventaId]);
+
+    const closeModal = () => {
+        setVisible(false);
+        onEditComplete(); // Llamamos a la función de callback para que el componente principal recargue los datos
+    };
+
+    const cargarVenta = async (id: number) => {
+        try {
+            const venta = await obtenerVentaPorId(id);
+            setFecha(dayjs(venta.fecha));
+            setTurno(venta.turno);
+            
+            const productosConPrecio: Producto[] = venta.productos.map((prod: any) => {
+                return {
+                    id: prod.producto,
+                    nombre: prod.nombre_producto,
+                    cantidad: prod.cantidad,
+                    precio: prod.precio_producto,
+                };
+            });
+            setProductos(productosConPrecio);
+    
+            const total = productosConPrecio.reduce((acc: number, prod: Producto) => acc + prod.precio * prod.cantidad, 0);
+            setMontoTotal(total);
+        } catch (error) {
+            message.error("Error al cargar la venta");
         }
-    }, [visible]);
+    };
 
     const cargarProductos = async () => {
         try {
@@ -52,72 +79,65 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
     const handleAddProduct = () => {
         if (selectedProductId && selectedQuantity > 0) {
             const productoSeleccionado = productosDisponibles.find(prod => prod.id === selectedProductId);
-
             if (productoSeleccionado) {
                 const newProducto: Producto = {
-                    id: productoSeleccionado.id, // Usa el ID del producto
+                    id: productoSeleccionado.id,
                     nombre: productoSeleccionado.nombre_prod,
                     cantidad: selectedQuantity,
                     precio: productoSeleccionado.precio_prod,
                 };
-
-                const newProductos = [...productos, newProducto];
-                const newMontoTotal = montoTotal + (productoSeleccionado.precio_prod * selectedQuantity);
-                
-                setProductos(newProductos);
-                setMontoTotal(newMontoTotal);
-
-                setSelectedProductId(null); // Resetear el producto seleccionado
-                setSelectedQuantity(1);   // Resetear la cantidad seleccionada
+                setProductos([...productos, newProducto]);
+                setMontoTotal(montoTotal + (productoSeleccionado.precio_prod * selectedQuantity));
+                setSelectedProductId(null);
+                setSelectedQuantity(1);
             }
         }
     };
 
     const handleRemoveProduct = (productId: number) => {
-        const productoParaRemover = productos.find((p) => p.id === productId);
-        
+        const productoParaRemover = productos.find(p => p.id === productId);
         if (productoParaRemover) {
-            const updatedProductos = productos.filter((p) => p.id !== productId);
-            const newMontoTotal = montoTotal - (productoParaRemover.precio * productoParaRemover.cantidad);
-
-            setProductos(updatedProductos);
-            setMontoTotal(newMontoTotal);
+            setProductos(productos.filter(p => p.id !== productId));
+            setMontoTotal(montoTotal - (productoParaRemover.precio * productoParaRemover.cantidad));
         }
     };
 
     const handleSave = async () => {
         const ventaData = {
-            fecha,
-            productos,
+            fecha: fecha ? fecha.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
+            productos: productos.map((prod) => ({
+                producto: prod.id,
+                cantidad: prod.cantidad
+            })),
             turno,
-            montoTotal,
+            monto_total: montoTotal,
         };
-
+    
         try {
-            await crearVenta(ventaData);
-            message.success("Venta creada con éxito");
-            onSave(fecha, productos, turno, montoTotal);  // Actualiza el estado principal
-            onCancel();  // Cierra el modal
+            await editarVenta(ventaId, ventaData);
+            message.success("Venta editada con éxito");
+            closeModal(); // Cierra el modal tras guardar
         } catch (error) {
-            message.error("Error al crear la venta. Intenta nuevamente.");
-            console.error("Error al crear la venta:", error);
+            message.error("Error al editar la venta");
         }
     };
 
     return (
         <Modal
-            title="Añadir Venta"
+            title="Editar Venta"
             visible={visible}
-            onCancel={onCancel}
-            onOk={handleSave}
+            onCancel={closeModal}  // Función para cerrar el modal
+            onOk={handleSave}      // Guardar cambios y cerrar
             okText="Guardar cambios"
             cancelText="Cancelar"
+            destroyOnClose={true}  // Destruir el contenido del modal al cerrarse
         >
             <div>
                 <label>Fecha*</label>
                 <DatePicker
-                    style={{ width: '100%' }}
+                    value={fecha}
                     onChange={(date) => setFecha(date)}
+                    style={{ width: '100%' }}
                 />
             </div>
 
@@ -167,6 +187,7 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                 <Select
                     placeholder="Elige un turno"
                     style={{ width: '100%' }}
+                    value={turno}
                     onChange={(value) => setTurno(value)}
                 >
                     <Option value="Mañana">Mañana</Option>
@@ -180,7 +201,7 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                 <Input
                     type="text"
                     placeholder="Monto total"
-                    value={`$ ${montoTotal.toFixed(2)}`}
+                    value={`$ ${(montoTotal || 0).toFixed(2)}`}
                     readOnly
                     disabled
                 />
@@ -189,6 +210,4 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
     );
 };
 
-export default AddVentaModal;
-
-
+export default EditVentaModal;

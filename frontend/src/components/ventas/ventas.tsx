@@ -3,6 +3,7 @@ import { Layout, Card, Button, Table, Breadcrumb, message } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ExportOutlined, MenuOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import AddVentaModal from './modal/addVentaModal';
+import EditVentaModal from './modal/EditVentaModal';
 import { obtenerVentas, eliminarVenta } from '../../services/ventas_services';
 
 const { Sider, Content } = Layout;
@@ -23,6 +24,8 @@ interface VentaData {
 const Ventas: React.FC = () => {
     const [data, setData] = useState<VentaData[]>([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+    const [ventaSeleccionada, setVentaSeleccionada] = useState<VentaData | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [total, setTotal] = useState(0);
@@ -50,8 +53,6 @@ const Ventas: React.FC = () => {
             console.error("Error al cargar las ventas:", error);
         }
     };
-    
-    
 
     useEffect(() => {
         fetchVentas(currentPage, pageSize);
@@ -90,21 +91,27 @@ const Ventas: React.FC = () => {
         try {
             await eliminarVenta(id);
             message.success("Venta eliminada exitosamente");
-            fetchVentas(currentPage, pageSize); 
+            fetchVentas(currentPage, pageSize);
         } catch (error) {
             message.error("Error al eliminar la venta");
         }
     };
 
+    const handleEdit = (venta: VentaData) => {
+        setVentaSeleccionada(venta);
+        setIsEditModalVisible(true);
+    };
+
+
     const columns = [
         { title: 'Fecha', dataIndex: 'fecha', key: 'fecha' },
         { title: 'Productos', dataIndex: 'productos', key: 'productos' },
-        { title: 'Monto Total (AR$)', dataIndex: 'montoTotal', key: 'montoTotal', render: (monto: any) => `$ ${Number(monto || 0).toFixed(2)}`},
+        { title: 'Monto Total (AR$)', dataIndex: 'montoTotal', key: 'montoTotal', render: (monto: any) => `$ ${Number(monto || 0).toFixed(2)}` },
         { title: 'Turno', dataIndex: 'turno', key: 'turno' },
         {
             title: 'Opciones', key: 'opciones', render: (_: any, record: any) => (
                 <span>
-                    <Button icon={<EditOutlined />} type="link" onClick={() => console.log('Editar', record)} />
+                    <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
                     <Button icon={<DeleteOutlined />} type="link" danger onClick={() => handleDelete(record.key)} />
                 </span>
             ),
@@ -146,7 +153,7 @@ const Ventas: React.FC = () => {
                                 pageSize: pageSize,
                                 onChange: handlePageChange,
                                 showSizeChanger: true,
-                                pageSizeOptions: ['5','10', '20', '50', '100'],
+                                pageSizeOptions: ['5', '10', '20', '50', '100'],
                                 total: total,
                             }}
                         />
@@ -159,6 +166,17 @@ const Ventas: React.FC = () => {
                 onCancel={handleCancel}
                 onSave={handleSave}
             />
+
+        {ventaSeleccionada && (
+            <EditVentaModal
+                ventaId={parseInt(ventaSeleccionada.key, 10)}
+                onEditComplete={() => {
+                    fetchVentas(currentPage, pageSize);
+                    setVentaSeleccionada(null); // Limpia la selección tras la edición
+                }}
+            />
+        )}
+
         </div>
     );
 };

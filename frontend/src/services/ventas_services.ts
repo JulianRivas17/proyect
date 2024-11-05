@@ -3,9 +3,10 @@ import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
 
 interface Producto {
-    id: number; 
+    id: number;
     nombre: string;
     cantidad: number;
+    precio: number;
 }
 
 
@@ -83,7 +84,7 @@ interface VentaResponse {
     fecha: string;
     turno: string;
     monto_total: number;
-    productos: { producto: string; cantidad: number, nombre_producto: string }[];
+    productos: { producto: string; cantidad: number, nombre_producto: string, precio_prod: number;  }[];
 }
 
 export const obtenerVentas = async (page: number, pageSize: number): Promise<{ results: VentaResponse[]; count: number }> => {
@@ -122,3 +123,34 @@ export const eliminarVenta = async (id: number) => {
         throw error;
     }
 };
+
+export const obtenerVentaPorId = async (id: number) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${BASE_URL_2}ventas/${id}/detalle/`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener la venta:", error);
+        throw error;
+    }
+};
+
+export const editarVenta = async (id: number, ventaData: any) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.put(`${BASE_URL_2}ventas/${id}/detalle/`, ventaData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al editar la venta:", error);
+        throw error;
+    }
+};
+
