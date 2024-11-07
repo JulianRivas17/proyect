@@ -26,3 +26,14 @@ class VentaProducto(models.Model):
 
     def __str__(self):
         return f"{self.cantidad} x {self.producto.nombre_prod} en venta {self.venta.id}"
+
+class Caja(models.Model):
+    estado_caja = models.BooleanField(default=False)  # True para abierta, False para cerrada
+    fecha_hs_aper_caja = models.DateTimeField()
+    fecha_hs_cierre_caja = models.DateTimeField(blank=True, null=True)
+    monto_inicial_caja = models.DecimalField(max_digits=10, decimal_places=2)
+    total_saldo_caja = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+    def __str__(self):
+        estado = "Abierta" if self.estado_caja else "Cerrada"
+        return f"Caja {self.id} - Estado: {estado}"

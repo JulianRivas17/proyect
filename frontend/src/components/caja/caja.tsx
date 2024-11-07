@@ -6,13 +6,13 @@ import moment from 'moment';
 
 
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout, Button, Card, Divider, Radio, Table, Flex, Breadcrumb } from 'antd';
 import type { TableColumnsType, TableProps } from 'antd';
 import { start } from 'repl';
+import { listarCajas } from '../../services/cajaService';
 
 const { Sider, Content } = Layout; //destructuro el layout puede ser header sider content footer
-
 
 interface DataType {
     key: React.Key;
@@ -22,6 +22,7 @@ interface DataType {
     montoIni: number;
     montoFin: number;
 }
+
 
 const columns: TableColumnsType<DataType> = [
     { title: 'Fecha', dataIndex: 'fecha', sorter: (a: any, b: any) => moment(a.fecha, 'DD/MM/YYYY').unix() - moment(b.fecha, 'DD/MM/YYYY').unix() },
@@ -83,7 +84,20 @@ const rowSelection: TableProps<DataType>['rowSelection'] = {
 
 const CajaTemp: React.FC = () => {
     const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox'); //por deefecto checbok xq borre el radio
-
+    
+    useEffect(() => {
+        const fetchCajas = async () => {
+            try {
+                const data = await listarCajas();
+                console.log(data, "dataCaja")
+            } catch (error) {
+                console.error('Error al obtener las cajas:', error);
+            } finally {
+            }
+        };
+    
+        fetchCajas();
+    }, []);
 
     return (
         <div style={{ marginTop: '4rem' }}>
