@@ -17,4 +17,5 @@ urlpatterns = [
     path('ventas/', include('api.ventas.urls')), 
     path('productos/', include('api.producto.urls')),
     path('caja/', include('api.caja.urls')),
+    path('usuarios/', include('api.usuarios.urls')),  # Agregamos el nuevo módulo
 ]
