@@ -54,18 +54,17 @@ export const crearVenta = async (ventaData: VentaData) => {
     }
 };
 
-interface ProductoDisponible {
+export interface ProductoDisponible {
     id: number;
     nombre_prod: string;
-    precio_prod: number; 
+    precio_prod: number;
+    image_url: string; 
 }
 
 export const obtenerProductos = async (): Promise<ProductoDisponible[]> => {
     try {
-        // Obtén el token del localStorage
-        const token = localStorage.getItem('token'); // Asegúrate de que el nombre sea correcto
+        const token = localStorage.getItem('token'); 
 
-        // Configura los encabezados de autorización
         const response = await axios.get(`${BASE_URL_2}productos/`, {
             headers: {
                 Authorization: `Bearer ${token}`,

@@ -46,6 +46,11 @@ const AppHeader: React.FC = () => {
               <Link to="/users" style={{ color: '#fff' }}>Gestión de Usuarios</Link>
             </Menu.Item>
           )}
+          {userGroup === 'Gerente' && (
+            <Menu.Item className="menu-item-custom" key="5">
+              <Link to="/productos" style={{ color: '#fff' }}>Productos</Link>
+            </Menu.Item>
+          )}
         </Menu>
       </div>
     </Header>

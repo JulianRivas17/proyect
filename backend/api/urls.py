@@ -7,6 +7,8 @@ from rest_framework_simplejwt.views import (
 
 from api.register.views import register_user
 from api.login.views import CustomTokenObtainPairView
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -19,4 +21,4 @@ urlpatterns = [
     path('caja/', include('api.caja.urls')),
     path('usuarios/', include('api.usuarios.urls')), 
     path('roles/', include('api.roles.urls'))
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

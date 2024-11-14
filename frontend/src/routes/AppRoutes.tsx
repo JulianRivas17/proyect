@@ -9,6 +9,7 @@ import AppHeader from '../components/header/Header';
 import Ventas from '../components/ventas/ventas';
 import Users from '../components/users/users';
 import CajaTemp from '../components/caja/caja';
+import Productos from '../components/productos/productos';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -28,7 +29,9 @@ const AppRoutes = () => {
         <Route element={<ProtectedRoute requiredGroup="Gerente" />}>
           <Route path="/dashboard" element={<Home />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/productos" element={<Productos />} />
         </Route>
+        
 
         {/* Rutas protegidas para cualquier usuario autenticado */}
         <Route element={<ProtectedRoute />}>

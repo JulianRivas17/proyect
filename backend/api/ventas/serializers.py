@@ -23,13 +23,9 @@ class VentaSerializer(serializers.ModelSerializer):
         return representation
 
     def create(self, validated_data):
-        # Primero eliminamos el campo productos, ya que no es parte directa del modelo Venta
         productos_data = validated_data.pop('productos', [])
-
-        # Crear la venta
         venta = Venta.objects.create(**validated_data)
 
-        # Crear los productos asociados a la venta
         for producto_data in productos_data:
             VentaProducto.objects.create(
                 venta=venta,
@@ -42,30 +38,24 @@ class VentaSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         productos_data = validated_data.pop('productos', [])
 
-        # Actualizar los campos de Venta
         instance.fecha = validated_data.get('fecha', instance.fecha)
         instance.monto_total = validated_data.get('monto_total', instance.monto_total)
         instance.turno = validated_data.get('turno', instance.turno)
         instance.save()
 
-        # Actualizar o eliminar productos
         existing_productos = {prod.producto_id: prod for prod in VentaProducto.objects.filter(venta=instance)}
         new_productos = {item['producto']: item for item in productos_data}
 
-        # Eliminar productos que ya no están en la solicitud
         for producto_id in list(existing_productos.keys()):
             if producto_id not in new_productos:
                 existing_productos[producto_id].delete()
 
-        # Actualizar o agregar productos nuevos
         for producto_id, producto_data in new_productos.items():
             if producto_id in existing_productos:
-                # Producto existe, actualizar cantidad
                 producto = existing_productos[producto_id]
                 producto.cantidad = producto_data['cantidad']
                 producto.save()
             else:
-                # Producto no existe, crear uno nuevo
                 VentaProducto.objects.create(
                     venta=instance,
                     producto_id=producto_data['producto'],
