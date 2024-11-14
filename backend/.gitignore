@@ -5,3 +5,6 @@ __pycache__/
 *.pyd
 *.py[cod]
 *.cpython-*
+
+# Ignora las imágenes .jpg
+*.jpg
