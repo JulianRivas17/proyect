@@ -2,6 +2,8 @@ import jwt_decode from 'jwt-decode';
 
 interface DecodedToken {
   exp: number;
+  user_id?: number; 
+  group?: string;
 }
 export interface RegisterValues {
   name: string;
@@ -99,3 +101,17 @@ export const getUserGroupFromToken = (): string | null => {
   }
   return null;
 };
+
+export const getUserIdFromToken = (): number | null => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const decoded: DecodedToken = jwt_decode(token);
+      return decoded.user_id || null;
+    } catch (error) {
+      console.error('Error al decodificar el token', error);
+      return null;
+    }
+  }
+  return null;
+}

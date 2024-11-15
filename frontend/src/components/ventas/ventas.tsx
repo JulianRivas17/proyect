@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Button, Table, Breadcrumb, message } from 'antd';
+import { Layout, Card, Button, Table, Breadcrumb, message, Modal } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ExportOutlined, MenuOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import AddVentaModal from './modal/addVentaModal';
@@ -39,15 +39,16 @@ const Ventas: React.FC = () => {
                     key: venta.id?.toString() || '', // Si `venta.id` es undefined, usa un string vacío
                     fecha: dayjs(venta.fecha).format('DD/MM/YYYY'),
                     productos: (venta.productos || [])
-                        .map((p) => `${p.nombre_producto || 'Producto desconocido'} (x${p.cantidad || 0})`) // Verifica `nombre_producto` y `cantidad`
+                        .map((p) => `${p.nombre_producto || 'Producto desconocido'} (x${p.cantidad || 0})`) 
                         .join(', '),
-                    turno: venta.turno || 'Sin turno', // Valor por defecto si no tiene turno
-                    montoTotal: venta.monto_total || 0 // Asegúrate de que monto_total sea un número
+                    turno: venta.turno || 'Sin turno', 
+                    montoTotal: venta.monto_total || 0 
                 }));
             setData(ventasData);
-            setTotal(response.count); // Configura el total de elementos desde el backend
+            setTotal(response.count); 
             setCurrentPage(page);
             setPageSize(pageSize);
+            console.log("data", data)
         } catch (error) {
             message.error("Error al cargar las ventas");
             console.error("Error al cargar las ventas:", error);
@@ -79,7 +80,7 @@ const Ventas: React.FC = () => {
                 turno,
                 montoTotal,
             };
-            setData([...data, newVenta]);
+            fetchVentas(currentPage, pageSize); 
             message.success('Venta creada exitosamente');
             setIsModalVisible(false);
         } catch (error) {
@@ -87,19 +88,30 @@ const Ventas: React.FC = () => {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        try {
-            await eliminarVenta(id);
-            message.success("Venta eliminada exitosamente");
-            fetchVentas(currentPage, pageSize);
-        } catch (error) {
-            message.error("Error al eliminar la venta");
-        }
+    const handleDelete = (id: number) => {
+        Modal.confirm({
+            title: '¿Estás seguro de que quieres eliminar esta venta?',
+            content: 'Esta acción no se puede deshacer.',
+            onOk: async () => {
+                try {
+                    await eliminarVenta(id);
+                    message.success('Venta eliminada exitosamente');
+                    fetchVentas(currentPage, pageSize); 
+                } catch (error) {
+                    message.error('Error al eliminar la venta');
+                }
+            },
+            onCancel: () => {
+                // Aquí puedes manejar lo que sucede si el usuario cancela la acción
+                console.log('Eliminación cancelada');
+            }
+        });
     };
 
     const handleEdit = (venta: VentaData) => {
         setVentaSeleccionada(venta);
         setIsEditModalVisible(true);
+        fetchVentas(currentPage, pageSize); 
     };
 
 

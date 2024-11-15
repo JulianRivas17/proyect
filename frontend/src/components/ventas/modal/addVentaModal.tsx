@@ -36,9 +36,20 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
 
     useEffect(() => {
         if (visible) {
+            resetForm();
             cargarProductos();
         }
     }, [visible]);
+
+
+    const resetForm = () => {
+        setFecha(null);
+        setProductos([]);
+        setTurno('');
+        setMontoTotal(0);   
+        setSelectedProductId(null);
+        setSelectedQuantity(1);
+    };
 
     const cargarProductos = async () => {
         try {
@@ -63,19 +74,19 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
 
                 const newProductos = [...productos, newProducto];
                 const newMontoTotal = montoTotal + (productoSeleccionado.precio_prod * selectedQuantity);
-                
+
                 setProductos(newProductos);
                 setMontoTotal(newMontoTotal);
 
-                setSelectedProductId(null); // Resetear el producto seleccionado
-                setSelectedQuantity(1);   // Resetear la cantidad seleccionada
+                setSelectedProductId(null);
+                setSelectedQuantity(1);  
             }
         }
     };
 
     const handleRemoveProduct = (productId: number) => {
         const productoParaRemover = productos.find((p) => p.id === productId);
-        
+
         if (productoParaRemover) {
             const updatedProductos = productos.filter((p) => p.id !== productId);
             const newMontoTotal = montoTotal - (productoParaRemover.precio * productoParaRemover.cantidad);
@@ -118,6 +129,7 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                 <DatePicker
                     style={{ width: '100%' }}
                     onChange={(date) => setFecha(date)}
+                    value={fecha}
                 />
             </div>
 
@@ -167,6 +179,7 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                 <Select
                     placeholder="Elige un turno"
                     style={{ width: '100%' }}
+                    value={turno}
                     onChange={(value) => setTurno(value)}
                 >
                     <Option value="Mañana">Mañana</Option>
@@ -190,5 +203,4 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
 };
 
 export default AddVentaModal;
-
 

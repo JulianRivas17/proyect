@@ -136,38 +136,6 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ visible, userId, onCancel
                         <Input placeholder="Escribe el correo electrónico" />
                     </Form.Item>
 
-                    <Form.Item
-                        name="password"
-                        label="Contraseña"
-                        rules={[
-                            { required: false, message: 'La contraseña es obligatoria' },
-                            { validator: passwordValidator },
-                        ]}
-                        hasFeedback
-                    >
-                        <Input.Password placeholder="Escribe la contraseña" />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="confirmPassword"
-                        label="Confirmar Contraseña"
-                        dependencies={['password']}
-                        hasFeedback
-                        rules={[
-                            { required: false, message: 'Confirma la contraseña' },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                    if (!value || getFieldValue('password') === value) {
-                                        return Promise.resolve();
-                                    }
-                                    return Promise.reject(new Error('Las contraseñas no coinciden'));
-                                },
-                            }),
-                        ]}
-                    >
-                        <Input.Password placeholder="Confirma la contraseña" />
-                    </Form.Item>
-
                     <Form.Item name="rol" label="Rol" rules={[{ required: true, message: 'Elige un rol' }]}>
                         <Select placeholder="Elige un rol">
                             {roles.map((rol: any) => (

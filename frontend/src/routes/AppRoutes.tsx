@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Login from '../components/login/login';
 import Home from '../pages/home';
@@ -9,13 +9,25 @@ import Ventas from '../components/ventas/ventas';
 import Users from '../components/users/users';
 import CajaTemp from '../components/caja/caja';
 import Productos from '../components/productos/productos';
-import LandingPage from '../components/public/landingPage'; 
+import LandingPage from '../components/public/landingPage';
 
 const AppRoutes = () => {
   const location = useLocation();
 
-  const hideHeaderPaths = ['/', '/register', '/landing']; 
+  const hideHeaderPaths = ['/', '/register', '/landing'];
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
+
+  useEffect(() => {
+    if (location.pathname === '/landing') {
+      document.body.style.backgroundColor = '#2d2c36'; 
+    } else {
+      document.body.style.backgroundColor = ''; 
+    }
+
+    return () => {
+      document.body.style.backgroundColor = '';
+    };
+  }, [location.pathname]);
 
   return (
     <>
@@ -32,7 +44,6 @@ const AppRoutes = () => {
           <Route path="/users" element={<Users />} />
           <Route path="/productos" element={<Productos />} />
         </Route>
-        
 
         {/* Rutas protegidas para cualquier usuario autenticado */}
         <Route element={<ProtectedRoute />}>

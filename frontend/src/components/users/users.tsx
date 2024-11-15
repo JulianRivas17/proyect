@@ -6,6 +6,7 @@ import { eliminarUsuario, listarUsuarios } from '../../services/usersService';
 import NuevoEmpleadoModal from './model/add-user-model';
 import './users.css';
 import EditUserModal from './model/edit-user-model';
+import { getUserIdFromToken } from '../../services/authService';
 
 const { Sider, Content } = Layout;
 
@@ -67,6 +68,13 @@ const Users: React.FC = () => {
     };
 
     const handleDeleteUser = (userId: number) => {
+        const currentUserId = getUserIdFromToken(); // Obtener el ID del usuario autenticado
+    
+        if (currentUserId === userId) {
+            message.error('No puedes eliminar tu propio usuario');
+            return; // Evitar que se elimine el usuario
+        }
+    
         Modal.confirm({
             title: '¿Estás seguro de que quieres eliminar este usuario?',
             content: 'Esta acción no se puede deshacer',
@@ -82,6 +90,7 @@ const Users: React.FC = () => {
             },
         });
     };
+    
 
     const columns = [
         { title: 'Nombre', dataIndex: 'nombre', key: 'nombre' },
