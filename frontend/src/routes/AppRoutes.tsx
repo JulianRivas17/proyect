@@ -1,4 +1,3 @@
-// src/routes/AppRoutes.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Login from '../components/login/login';
@@ -10,11 +9,12 @@ import Ventas from '../components/ventas/ventas';
 import Users from '../components/users/users';
 import CajaTemp from '../components/caja/caja';
 import Productos from '../components/productos/productos';
+import LandingPage from '../components/public/landingPage'; 
 
 const AppRoutes = () => {
   const location = useLocation();
 
-  const hideHeaderPaths = ['/', '/register'];
+  const hideHeaderPaths = ['/', '/register', '/landing']; 
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
 
   return (
@@ -24,6 +24,7 @@ const AppRoutes = () => {
         {/* Rutas públicas */}
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Login />} />
+        <Route path="/landing" element={<LandingPage />} />
 
         {/* Rutas protegidas solo para Gerente */}
         <Route element={<ProtectedRoute requiredGroup="Gerente" />}>

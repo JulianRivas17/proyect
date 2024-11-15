@@ -1,0 +1,240 @@
+body {
+    background-color: #2d2c36;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe Ui, sans-serif;
+}
+
+h3 {
+    display: block;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
+
+P {
+    margin: 0;
+}
+
+.container-principal {
+    max-width: 640px;
+    margin: 0 auto;
+    min-height: calc(100vh - 230px);
+    position: relative;
+    z-Index: 1;
+    background-color: #2d2c36;
+}
+
+.contain-social-networking {
+    display: flex;
+    justify-content: left;
+    gap: 8px;
+}
+
+.container-banner {
+    background-image: url(https://gruporubaiyat.com/wp-content/uploads/2023/08/IMG_6924-2048x1365.jpg);
+    background-position:center;
+    background-size: cover;
+    height: 180px;
+    margin: 0 auto;
+    width: 640px;
+    position: relative;
+}
+
+.container-banner:after {
+    background: linear-gradient(360deg, #000000b3, #0000);
+    content: "";
+    height: 56px;
+    left: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.contain-banner-flex {
+    padding: 10px 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    background-color: #2d2c36;
+    border-bottom: 2px solid #393844;
+}
+
+.contain-logo h1 {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe Ui, sans-serif;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+}
+
+img.icon-logo-brunnete {
+    filter: invert(1) brightness(2);
+    width: 30px;
+}
+
+.contain-logo {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 10px;
+}
+
+
+.contain-social-networking .ant-btn.ant-btn-icon-only {
+    width: 40px;
+    height: 40px;
+}
+
+.contain-social-networking .item-social-network {
+    backdrop-filter: blur(4px);
+    background: color-mix(in srgb, #252525 50%, #0000);
+    border-radius: 8px;
+    padding: 10px;
+    border: 2px solid #393844;
+    box-shadow: none;
+}
+
+.categories-tab {
+    background: transparent;
+    position: sticky;
+    position: -webkit-sticky;
+    animation: .1s ease-in-out;
+    top: 0;
+    z-index: 2;
+}
+
+.contain-menu {
+    background-color: #2d2c36;
+}
+
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-card .ant-card-cover >* {
+    display: block;
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    background-size: cover;
+    object-fit: cover;
+}
+
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-card .ant-card-body {
+    padding: 15px;
+    border-radius: 0 0 8px 8px;
+}
+
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-card-bordered .ant-card-cover {
+    margin-top: 0px;
+    margin-inline-start: 0px; 
+    margin-inline-end: 0px; 
+}
+
+h3.title-Product {
+    line-height: 1.2;
+    text-transform:uppercase;
+    font-weight: 400;
+    font-size: 17px;
+    text-align: left;
+    color: white;
+    margin-bottom: 5px;
+}
+
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-card-bordered {
+    border: 0.5px solid #4e4e4e;
+}
+
+.add-Product {
+    background-color: #827ade;
+    color: white;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+}
+
+.add-Product:hover {
+    color: #827ade !important;
+}
+
+.price-Product {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+.title-section-menu {
+    border-bottom: 1px solid #ababae;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    font-size: 20px;
+    color: white;
+    text-align: left;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 16px;
+}
+
+.card-Product {
+    display: grid;
+    grid-template-columns: 0.2fr 2fr 0.5fr;
+    column-gap: 20px;
+    margin-top: 20px;
+    padding: 5px;
+}
+
+.card-Product img {
+    width: 80px;
+    height: 80px;
+    background-position: center;
+    background-size: cover;
+    object-fit:fill;
+    border-radius: 10px;
+}
+
+.description-product {
+    color: rgba(255, 255, 255, 0.65);
+    text-transform: lowercase;
+    font-size: 15px;
+    font-weight: 300;
+    text-align: left;
+    width: 100%;
+    letter-spacing: 0.5px;
+}
+
+p.description-product::first-letter {
+    text-transform: capitalize;
+}
+
+.contain-actions .price-Product {
+    text-align: right;
+    margin-bottom: 6px;
+}
+.contain-body-Product,
+.contain-actions {
+    align-self: center;
+}
+
+.container-carousel {
+    display: flex;
+    gap: 20px;
+}
+
+.slick-track {
+    height: 280px;
+}
+
+.slick-dots.slick-dots-bottom {
+    z-index: 0;
+}
+
+.card-Product:hover {
+    border-color: transparent;
+    cursor: pointer;
+    box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+    border-radius: 15px;
+    background: #312f3a;
+}
