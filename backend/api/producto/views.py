@@ -5,8 +5,10 @@ from django.shortcuts import get_object_or_404
 from api.models import Producto, VentaProducto
 from .serializers import ProductoSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import AllowAny
 
 class ProductoListView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         productos = Producto.objects.all()
         serializer = ProductoSerializer(productos, many=True)

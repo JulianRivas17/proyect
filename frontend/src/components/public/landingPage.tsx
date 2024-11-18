@@ -1,16 +1,21 @@
 // src/components/public/LandingPage.tsx
 // src/components/public/LandingPage.tsx
-import React, { useRef } from 'react';
-import { Card, Menu, Layout, Button, Carousel } from 'antd';
+import React, { useRef, useState, useEffect } from 'react';
+import { Card, Menu, Layout, Button, Carousel, message } from 'antd';
 import { InstagramOutlined, FacebookOutlined, EnvironmentOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import './landing.css';
 import iconBrunnete from '../../assets/images/cocinero.png';
 
+
+/* Productos */
+import { obtenerProductos, ProductoDisponible } from '../../services/ventas_services';
+import { obtenerURLImagen } from '../../services/productosService';
+
 const { Content, Footer } = Layout;
 const { Meta } = Card;
-
 const LandingPage: React.FC = () => {
     // Define los refs para cada sección
+    const [productos, setProdutos] = useState<ProductoDisponible[]>([]);
     const mostSoldRef = useRef<HTMLDivElement>(null);
     const combosRef = useRef<HTMLDivElement>(null);
     const specialsRef = useRef<HTMLDivElement>(null);
@@ -20,6 +25,36 @@ const LandingPage: React.FC = () => {
     const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
     };
+
+    /* Productos */
+    const fetchProductos = async () => {
+        try {
+            const productos = await obtenerProductos();
+            setProdutos(productos);
+        } catch (error) {
+            message.error('Error al cargar los productos');
+        }
+    };
+
+    useEffect(() => {
+        fetchProductos();
+    }, []);
+
+
+    const chunkArray = (array: any, chunkSize: any) => {
+        const chunks = [];
+        for (let i = 0; i < array.length; i += chunkSize) {
+            chunks.push(array.slice(i, i + chunkSize));
+        }
+        console.log(chunks)
+        return chunks;
+    };
+
+    const productosEspecialidades = productos.filter(
+        (producto) => producto.category === "Especialidades"
+    );
+
+    const gruposDeProductos = chunkArray(productosEspecialidades, 3);
 
     return (
         <Layout className="container-principal">
@@ -54,151 +89,148 @@ const LandingPage: React.FC = () => {
                     {/* Contenido de "Lo más vendido" */}
 
                     <Carousel autoplay>
-                        {/*Esta dividido cada 3 imágenes (como máximo), faltaria hacer que cada 3 se genere un div contain-product-mostSold*/}
-                        <div className="contain-product-mostSold">
-                            <div className="container-carousel">
-                                <Card className="card-Custom" 
-                                    hoverable
-                                    style={{ width: 200, background: '#2d2c36'}}
-                                    cover={<img className="img-Product" alt="example" src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" height="100px"/>}
-                                >
-                                    <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                                    <p className="price-Product">$7.000</p>
-                                    <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                                </Card>
-                                <Card className="card-Custom" 
-                                    hoverable
-                                    style={{ width: 200, background: '#2d2c36'}}
-                                    cover={<img className="img-Product" alt="example" src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" height="100px"/>}
-                                >
-                                    <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                                    <p className="price-Product">$7.000</p>
-                                    <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                                </Card>
-                                <Card className="card-Custom" 
-                                    hoverable
-                                    style={{ width: 200, background: '#2d2c36'}}
-                                    cover={<img className="img-Product" alt="example" src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" height="100px"/>}
-                                >
-                                    <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                                    <p className="price-Product">$7.000</p>
-                                    <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                                </Card>
+                        {gruposDeProductos.map((grupo, index) => (
+                            <div className="contain-product-mostSold" key={index}>
+                                <div className="container-carousel">
+                                    {grupo.map((producto: any) => {
+                                      const urlImagen = obtenerURLImagen(producto.image_url)?.toString();
+                                        const precioFormateado = Number(producto.precio_prod).toLocaleString('es-ES');
+
+                                        return (
+                                            <Card
+                                                key={producto.id}
+                                                className="card-Custom"
+                                                hoverable
+                                                style={{ width: 200, background: "#2d2c36" }}
+                                                cover={
+                                                    <img
+                                                        className="img-Product"
+                                                        alt={producto.nombre_prod}
+                                                        src={urlImagen || "https://via.placeholder.com/150"}
+                                                        height="100px"
+                                                    />
+                                                }
+                                            >
+                                                <h3 className="title-Product">{producto.nombre_prod}</h3>
+                                                <p className="price-Product">${precioFormateado}</p>
+                                                <Button className="add-Product">
+                                                    <ShoppingCartOutlined style={{ fontSize: "20px" }} />
+                                                    Añadir al carrito
+                                                </Button>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
-                        <div className="contain-product-mostSold">
-                            <div className="container-carousel">
-                                <Card className="card-Custom" 
-                                    hoverable
-                                    style={{ width: 200, background: '#2d2c36'}}
-                                    cover={<img className="img-Product" alt="example" src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" height="100px"/>}
-                                >
-                                    <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                                    <p className="price-Product">$7.000</p>
-                                    <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                                </Card>
-                                <Card className="card-Custom" 
-                                    hoverable
-                                    style={{ width: 200, background: '#2d2c36'}}
-                                    cover={<img className="img-Product" alt="example" src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" height="100px"/>}
-                                >
-                                    <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                                    <p className="price-Product">$7.000</p>
-                                    <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                                </Card>
-                                <Card className="card-Custom" 
-                                    hoverable
-                                    style={{ width: 200, background: '#2d2c36'}}
-                                    cover={<img className="img-Product" alt="example" src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" height="100px"/>}
-                                >
-                                    <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                                    <p className="price-Product">$7.000</p>
-                                    <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                                </Card>
-                            </div>
-                        </div>
+                        ))}
                     </Carousel>
                 </div>
 
                 <div ref={combosRef} style={{ padding: '20px 0px 50px 0px' }}>
-                    <h2 className="title-section-menu">Combos</h2>
+                    <h2 className="title-section-menu">Principales</h2>
                     {/* Contenido de "Combos" */}
-                    <div className="card-Product">
-                        <img src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" alt="" />
-                        <div className="contain-body-Product">
-                            <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                            <p className="description-product">CARNE SMASHEADA, CHEDDAR, CEBOLLA, KETCHUP, MOSTAZA Y PAN DE PAPA. INCLUYE PAPAS FRITAS</p>
-                        </div>
-                        <div className="contain-actions">
-                            <p className="price-Product">$7.000</p>
-                            <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                        </div>
-                    </div>
-                    <div className="card-Product">
-                        <img src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" alt="" />
-                        <div className="contain-body-Product">
-                            <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                            <p className="description-product">CARNE SMASHEADA, CHEDDAR, CEBOLLA, KETCHUP, MOSTAZA Y PAN DE PAPA. INCLUYE PAPAS FRITAS</p>
-                        </div>
-                        <div className="contain-actions">
-                            <p className="price-Product">$7.000</p>
-                            <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                        </div>
-                    </div>
+                    {productos
+                        .filter((producto) => producto.category === "Principales")
+                        .map((producto) => {
+                            const urlImagen = obtenerURLImagen(producto.image_url)?.toString(); // Generar URL de la imagen
+                            const precioFormateado = producto.precio_prod.toLocaleString('es-ES');
+
+                            return (
+                                <div className="card-Product" key={producto.id}>
+                                    <img
+                                        src={urlImagen}
+                                        alt={producto.nombre_prod}
+                                        className="product-image"
+                                        style={{ objectFit: 'cover' }}
+                                    />
+                                    <div className="contain-body-Product">
+                                        <h3 className="title-Product">{producto.nombre_prod}</h3>
+                                        <p className="description-product">
+                                            {producto.description}
+                                        </p>
+                                    </div>
+                                    <div className="contain-actions">
+                                        <p className="price-Product">${precioFormateado}</p>
+                                        <Button className="add-Product">
+                                            <ShoppingCartOutlined style={{ fontSize: '20px' }} />
+                                            Añadir al carrito
+                                        </Button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
                 </div>
 
                 <div ref={specialsRef}>
-                    <h2 className="title-section-menu">Principales</h2>
+                    <h2 className="title-section-menu">Postres</h2>
                     {/* Contenido de "Especiales" */}
-                    <div className="card-Product">
-                        <img src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" alt="" />
-                        <div className="contain-body-Product">
-                            <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                            <p className="description-product">CARNE SMASHEADA, CHEDDAR, CEBOLLA, KETCHUP, MOSTAZA Y PAN DE PAPA. INCLUYE PAPAS FRITAS</p>
-                        </div>
-                        <div className="contain-actions">
-                            <p className="price-Product">$7.000</p>
-                            <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                        </div>
-                    </div>
-                    <div className="card-Product">
-                        <img src="https://www.clarin.com/2022/05/27/0HXb0UR0v_2000x1500__1.jpg" alt="" />
-                        <div className="contain-body-Product">
-                            <h3 className="title-Product">Hamburguesa Cuarto de Teca</h3>
-                            <p className="description-product">CARNE SMASHEADA, CHEDDAR, CEBOLLA, KETCHUP, MOSTAZA Y PAN DE PAPA. INCLUYE PAPAS FRITAS</p>
-                        </div>
-                        <div className="contain-actions">
-                            <p className="price-Product">$7.000</p>
-                            <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                        </div>
-                    </div>
+                    {productos
+                        .filter((producto) => producto.category === "Postres")
+                        .map((producto) => {
+                            const urlImagen = obtenerURLImagen(producto.image_url)?.toString(); // Generar URL de la imagen
+                            const precioFormateado = producto.precio_prod.toLocaleString('es-ES');
+
+                            return (
+                                <div className="card-Product" key={producto.id}>
+                                    <img
+                                        src={urlImagen}
+                                        alt={producto.nombre_prod}
+                                        className="product-image"
+                                        style={{ objectFit: 'cover' }}
+                                    />
+                                    <div className="contain-body-Product">
+                                        <h3 className="title-Product">{producto.nombre_prod}</h3>
+                                        <p className="description-product">
+                                            {producto.description}
+                                        </p>
+                                    </div>
+                                    <div className="contain-actions">
+                                        <p className="price-Product">${precioFormateado}</p>
+                                        <Button className="add-Product">
+                                            <ShoppingCartOutlined style={{ fontSize: '20px' }} />
+                                            Añadir al carrito
+                                        </Button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
                 </div>
 
                 <div ref={drinksRef} style={{ padding: '50px 0' }}>
                     <h2 className="title-section-menu">Bebidas</h2>
                     {/* Contenido de "Bebidas" */}
-                    <div className="card-Product">
-                        <img src="https://dcdn.mitiendanube.com/stores/005/110/462/products/coca-original-500ml-6-ef15633e536178b0e717284020274998-1024-1024.png" alt="" />
-                        <div className="contain-body-Product">
-                            <h3 className="title-Product">Coca Cola Común</h3>
-                            <p className="description-product">500ml</p>
-                        </div>
-                        <div className="contain-actions">
-                            <p className="price-Product">$2.500</p>
-                            <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                        </div>
-                    </div>
-                    <div className="card-Product">
-                        <img src="https://jumboargentina.vtexassets.com/arquivos/ids/799868/Gaseosa-Coca-Cola-Zero-X-500-Cc-2-19760.jpg?v=638349573654170000" alt="" />
-                        <div className="contain-body-Product">
-                            <h3 className="title-Product">Coca Cola Zero</h3>
-                            <p className="description-product">500ml</p>
-                        </div>
-                        <div className="contain-actions">
-                            <p className="price-Product">$2.500</p>
-                            <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
-                        </div>
-                    </div>
+                    {productos
+                        .filter((producto) => producto.category === "Bebidas")
+                        .map((producto) => {
+                            const urlImagen = obtenerURLImagen(producto.image_url)?.toString(); // Generar URL de la imagen
+                            const precioFormateado = producto.precio_prod.toLocaleString('es-ES');
+
+                            return (
+                                <div className="card-Product" key={producto.id}>
+                                    <img
+                                        src={urlImagen}
+                                        alt={producto.nombre_prod}
+                                        className="product-image"
+                                        style={{ objectFit: 'cover' }}
+                                    />
+                                    <div className="contain-body-Product">
+                                        <h3 className="title-Product">{producto.nombre_prod}</h3>
+                                        <p className="description-product">
+                                            {producto.description}
+                                        </p>
+                                    </div>
+                                    <div className="contain-actions">
+                                        <p className="price-Product">${precioFormateado}</p>
+                                        <Button className="add-Product">
+                                            <ShoppingCartOutlined style={{ fontSize: '20px' }} />
+                                            Añadir al carrito
+                                        </Button>
+                                    </div>
+                                </div>
+                            );
+                        })}
                 </div>
             </div>
 

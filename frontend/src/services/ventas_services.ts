@@ -59,16 +59,18 @@ export interface ProductoDisponible {
     nombre_prod: string;
     precio_prod: number;
     image_url: string; 
+    category: string;
+    description: string;
 }
 
 export const obtenerProductos = async (): Promise<ProductoDisponible[]> => {
     try {
-        const token = localStorage.getItem('token'); 
+       /*  const token = localStorage.getItem('token'); */ 
 
         const response = await axios.get(`${BASE_URL_2}productos/`, {
-            headers: {
+    /*         headers: {
                 Authorization: `Bearer ${token}`,
-            },
+            }, */
         });
 
         return response.data; 
