@@ -24,7 +24,7 @@ export const listarCajas = async (): Promise<CajaData[]> => {
         }
 
         // Realiza la solicitud al endpoint
-        const response = await axios.get(`${BASE_URL}listar-caja/`, {
+        const response = await axios.get(`${BASE_URL}listar-caja/`, { //ruta de la api
             headers: {
                 Authorization: `Bearer ${token}`,
             },
