@@ -8,7 +8,9 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import AppHeader from '../components/header/Header';
 import Ventas from '../components/ventas/ventas';
 import Users from '../components/users/users';
-import Caja from '../components/caja/caja';
+import CajaTemp from '../components/caja/caja';
+import Productos from '../components/productos/productos';
+
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -35,7 +37,7 @@ const AppRoutes = () => {
         {/* Rutas protegidas para cualquier usuario autenticado */}
         <Route element={<ProtectedRoute />}>
           <Route path="/ventas" element={<Ventas />} />
-          <Route path="/caja" element={<Caja/>} />
+          <Route path="/caja" element={<CajaTemp/>} />
         </Route>
       </Routes>
     </>

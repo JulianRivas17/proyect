@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Button, Card, Divider, Table, Breadcrumb, message } from 'antd';
-import { PlusCircleOutlined, DeleteOutlined, FolderOutlined, MenuOutlined } from '@ant-design/icons';
+import { Layout, Button, Card, Table, Breadcrumb, message } from 'antd';
+import { PlusCircleOutlined, DeleteOutlined, MenuOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import type { TableColumnsType, TableProps } from 'antd';
 import { listarCajas } from '../../services/cajaService';
 import './caja.css';
 import ModalMontoInicial from './modal/montoIniModal';
+import ModalAperturaCaja from './modal/modalAperturaCaja'; // Importamos el nuevo modal
 
 const { Sider, Content } = Layout;
 
@@ -66,13 +67,17 @@ const CajaTemp: React.FC = () => {
     const [selectionType] = useState<'checkbox' | 'radio'>('checkbox');
     const [data, setData] = useState<DataType[]>([]); // Estado para almacenar datos de la API
     const [loading, setLoading] = useState<boolean>(false);
-    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+    const [isMontoModalVisible, setIsMontoModalVisible] = useState<boolean>(false);
+    const [isAperturaModalVisible, setIsAperturaModalVisible] = useState<boolean>(false);
+    const [montoInicialSet, setMontoInicialSet] = useState<boolean>(false); // Nuevo estado para controlar el monto inicial
+
+    const [montoInicial, setMontoInicial] = useState<number | null>(null); //estado agregado para el monto
 
     // Función para obtener datos desde la API
     const fetchCajas = async () => {
         setLoading(true);
         try {
-            const response = await listarCajas(); // Llama al servicio para obtener los datos devuelve un 
+            const response = await listarCajas();
             const formattedData = response.map((item: any, index: number) => ({
                 key: index,
                 fecha: moment(item.fecha).format('DD/MM/YYYY'),
@@ -93,14 +98,29 @@ const CajaTemp: React.FC = () => {
     useEffect(() => {
         fetchCajas(); // Carga los datos al montar el componente
     }, []);
-     // Funciones para manejar la visibilidad del modal
-     const showModal = () => { // lo muestra
-        setIsModalVisible(true);
+
+    // Funciones para manejar la visibilidad de los modales
+    const showMontoModal = () => {
+        setIsMontoModalVisible(true);
     };
 
-    const handleModalClose = () => { //lo oculta
-        setIsModalVisible(false);
+    const closeMontoModal = () => {
+        setIsMontoModalVisible(false);
+        setMontoInicialSet(true); // Marcamos el monto inicial como establecido cuando se cierra el modal
     };
+
+    const showAperturaModal = () => {
+        setIsAperturaModalVisible(true);
+    };
+
+    const closeAperturaModal = () => {
+        setIsAperturaModalVisible(false);
+    };
+
+    const handleMontoSet = (monto: number) => {
+        setMontoInicial(monto); // Guardamos el monto inicial ingresado
+    };
+
 
     return (
         <div style={{ marginTop: '4rem' }}>
@@ -114,8 +134,10 @@ const CajaTemp: React.FC = () => {
             <div className="container-head-dash" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div className="title-screen">Caja</div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-                <Button className="add-button" icon={<PlusCircleOutlined />} onClick={showModal}>Monto Inicial</Button>
-                    <Button className="add-button" icon={<PlusCircleOutlined />}>Abrir Caja</Button>
+                    <Button className="add-button" icon={<PlusCircleOutlined />} onClick={showMontoModal}>Monto Inicial</Button>
+                    <Button className="add-button" icon={<PlusCircleOutlined />} disabled={!montoInicialSet} onClick={showAperturaModal}>
+                        Abrir Caja
+                    </Button>
                 </div>
             </div>
 
@@ -144,7 +166,9 @@ const CajaTemp: React.FC = () => {
                 </Layout>
             </Layout>
             {/* Modal para Monto Inicial */}
-            {isModalVisible && <ModalMontoInicial visible={isModalVisible} onClose={handleModalClose} />}
+            {isMontoModalVisible && <ModalMontoInicial visible={isMontoModalVisible} onClose={closeMontoModal} onMontoSet={handleMontoSet} />}
+            {/* Modal para Apertura de Caja */}
+            {isAperturaModalVisible && <ModalAperturaCaja visible={isAperturaModalVisible} onClose={closeAperturaModal} montoInicial={montoInicial?? 0}/>}
         </div>
     );
 };
