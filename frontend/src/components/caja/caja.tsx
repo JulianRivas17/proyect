@@ -1,18 +1,13 @@
-// import { Layout, Table, Button, Input, Space, Card } from 'antd';
-import { PlusCircleOutlined, DeleteOutlined, FolderOutlined, MenuOutlined } from '@ant-design/icons';
-import './caja.css'
-// import React, { useState } from 'react';
-import moment from 'moment';
-
-
-
 import React, { useEffect, useState } from 'react';
-import { Layout, Button, Card, Divider, Radio, Table, Flex, Breadcrumb } from 'antd';
+import { Layout, Button, Card, Divider, Table, Breadcrumb, message } from 'antd';
+import { PlusCircleOutlined, DeleteOutlined, FolderOutlined, MenuOutlined } from '@ant-design/icons';
+import moment from 'moment';
 import type { TableColumnsType, TableProps } from 'antd';
-import { start } from 'repl';
 import { listarCajas } from '../../services/cajaService';
+import './caja.css';
+import ModalMontoInicial from './modal/montoIniModal';
 
-const { Sider, Content } = Layout; //destructuro el layout puede ser header sider content footer
+const { Sider, Content } = Layout;
 
 interface DataType {
     key: React.Key;
@@ -23,20 +18,18 @@ interface DataType {
     montoFin: number;
 }
 
-
 const columns: TableColumnsType<DataType> = [
-    { title: 'Fecha', dataIndex: 'fecha', sorter: (a: any, b: any) => moment(a.fecha, 'DD/MM/YYYY').unix() - moment(b.fecha, 'DD/MM/YYYY').unix() },
     {
-        title: 'Turno', dataIndex: 'turno',
+        title: 'Fecha',
+        dataIndex: 'fecha',
+        sorter: (a: DataType, b: DataType) => moment(a.fecha, 'DD/MM/YYYY').unix() - moment(b.fecha, 'DD/MM/YYYY').unix(),
+    },
+    {
+        title: 'Turno',
+        dataIndex: 'turno',
         filters: [
-            {
-                text: 'Tarde',
-                value: 'Tarde',
-            },
-            {
-                text: 'Mañana',
-                value: 'Mañana',
-            },
+            { text: 'Tarde', value: 'Tarde' },
+            { text: 'Mañana', value: 'Mañana' },
         ],
         filterMode: 'tree',
         filterSearch: true,
@@ -47,57 +40,67 @@ const columns: TableColumnsType<DataType> = [
     { title: 'Monto Inicial', dataIndex: 'montoIni' },
     { title: 'Monto Final', dataIndex: 'montoFin' },
     {
-        title: 'Opciones', key: 'opciones', render: (_: any, record: any) => (
+        title: 'Opciones',
+        key: 'opciones',
+        render: (_: any, record: any) => (
             <span>
                 <Button icon={<DeleteOutlined style={{ marginRight: '30px' }} />} type="link" danger onClick={() => console.log('Eliminar', record)} />
-                <Button className='add-button' onClick={() => console.log('Editar', record)}>Detalle Venta</Button>
-
+                <Button className="add-button" onClick={() => console.log('Editar', record)}>Detalle Venta</Button>
             </span>
         ),
     },
 ];
 
-const data: DataType[] = [
-    { key: '1', fecha: moment().format('DD/MM/YYYY'), turno: "Mañana", estado: 'abierta', montoIni: 100000, montoFin: 500000 }, //ver como poner fecha
-    { key: '2', fecha: moment().subtract(1, 'month').format('DD/MM/YYYY'), turno: "Mañana", estado: 'abierta', montoIni: 100000, montoFin: 500000 },
-    { key: '3', fecha: moment().subtract(2, 'year').format('DD/MM/YYYY'), turno: "Mañana", estado: 'abierta', montoIni: 100000, montoFin: 500000 },
-    { key: '4', fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'), turno: "Mañana", estado: 'abierta', montoIni: 100000, montoFin: 500000 },
-    { key: '5', fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'), turno: "Tarde", estado: 'abierta', montoIni: 100000, montoFin: 500000 },
-    { key: '6', fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'), turno: "Tarde", estado: 'abierta', montoIni: 100000, montoFin: 500000 },
-    { key: '7', fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'), turno: "Tarde", estado: 'abierta', montoIni: 100000, montoFin: 500000 },
-    { key: '8', fecha: moment().subtract(2, 'days').format('DD/MM/YYYY'), turno: "Tarde", estado: 'abierta', montoIni: 100000, montoFin: 500000 },
-];
-
-// El objeto rowSelection indica la necesidad de selección de filas
+// Configuración de selección de filas
 const rowSelection: TableProps<DataType>['rowSelection'] = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => { //on change es una función que se ejecuta cada vez que cambia la selección de filas.
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows); //Es un array de claves (React.Key[]) que representa las claves únicas de las filas seleccionadas.
-        // selectrows Es un array de objetos (DataType[]) que contiene los datos completos de las filas seleccionadas.
+    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
     },
-    getCheckboxProps: (record: DataType) => ({ //record: Representa el objeto de datos de la fila actual.
-        disabled: record.turno === 'Disabled User', //indica si el checkbox esta deshabilitado.si el name del registro es 'Disabled User' lo deshabilita
+    getCheckboxProps: (record: DataType) => ({
+        disabled: record.turno === 'Disabled User',
         name: record.turno,
     }),
 };
 
-
-
 const CajaTemp: React.FC = () => {
-    const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox'); //por deefecto checbok xq borre el radio
-    
+    const [selectionType] = useState<'checkbox' | 'radio'>('checkbox');
+    const [data, setData] = useState<DataType[]>([]); // Estado para almacenar datos de la API
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
+    // Función para obtener datos desde la API
+    const fetchCajas = async () => {
+        setLoading(true);
+        try {
+            const response = await listarCajas(); // Llama al servicio para obtener los datos devuelve un 
+            const formattedData = response.map((item: any, index: number) => ({
+                key: index,
+                fecha: moment(item.fecha).format('DD/MM/YYYY'),
+                turno: item.turno,
+                estado: item.estado,
+                montoIni: item.montoIni,
+                montoFin: item.montoFin,
+            }));
+            setData(formattedData);
+        } catch (error) {
+            console.error('Error al obtener las cajas:', error);
+            message.error('Error al cargar los datos de la caja');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchCajas = async () => {
-            try {
-                const data = await listarCajas();
-                console.log(data, "dataCaja")
-            } catch (error) {
-                console.error('Error al obtener las cajas:', error);
-            } finally {
-            }
-        };
-    
-        fetchCajas();
+        fetchCajas(); // Carga los datos al montar el componente
     }, []);
+     // Funciones para manejar la visibilidad del modal
+     const showModal = () => { // lo muestra
+        setIsModalVisible(true);
+    };
+
+    const handleModalClose = () => { //lo oculta
+        setIsModalVisible(false);
+    };
 
     return (
         <div style={{ marginTop: '4rem' }}>
@@ -109,12 +112,10 @@ const CajaTemp: React.FC = () => {
                 </Breadcrumb>
             </div>
             <div className="container-head-dash" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div className="title-screen">
-                    Caja
-                </div>
+                <div className="title-screen">Caja</div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-                    <Button className='add-button ' icon={<PlusCircleOutlined />}>Monto Inicial</Button>
-                    <Button className='add-button ' icon={<PlusCircleOutlined />}>Abrir Caja</Button>
+                <Button className="add-button" icon={<PlusCircleOutlined />} onClick={showModal}>Monto Inicial</Button>
+                    <Button className="add-button" icon={<PlusCircleOutlined />}>Abrir Caja</Button>
                 </div>
             </div>
 
@@ -130,16 +131,20 @@ const CajaTemp: React.FC = () => {
                         <Table<DataType>
                             rowSelection={{ type: selectionType, ...rowSelection }}
                             columns={columns}
-                            dataSource={data}
+                            dataSource={data} // Usamos el estado 'data' que contiene los datos de la API
+                            loading={loading} // Indicador de carga
                             pagination={{
                                 pageSize: 5,
                                 pageSizeOptions: ['5', '10', '20'],
                                 defaultCurrent: 1,
                                 position: ['bottomCenter'],
-                            }} />
+                            }}
+                        />
                     </Content>
                 </Layout>
             </Layout>
+            {/* Modal para Monto Inicial */}
+            {isModalVisible && <ModalMontoInicial visible={isModalVisible} onClose={handleModalClose} />}
         </div>
     );
 };

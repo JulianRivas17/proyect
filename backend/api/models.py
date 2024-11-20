@@ -28,7 +28,7 @@ class VentaProducto(models.Model):
     def __str__(self):
         return f"{self.cantidad} x {self.producto.nombre_prod} en venta {self.venta.id}"
 
-class Caja(models.Model):
+class Caja(models.Model): #modelo de caja este modelo despues hacer makemigrations y genera las migration en la carpeta migration
     estado_caja = models.BooleanField(default=False)  # True para abierta, False para cerrada
     fecha_hs_aper_caja = models.DateTimeField()
     fecha_hs_cierre_caja = models.DateTimeField(blank=True, null=True)
