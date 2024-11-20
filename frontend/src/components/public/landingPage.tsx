@@ -1,7 +1,8 @@
 // src/components/public/LandingPage.tsx
 // src/components/public/LandingPage.tsx
-import React, { useRef } from 'react';
-import { Card, Menu, Layout, Button, Carousel } from 'antd';
+import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, Menu, Layout, Button, Carousel, Input } from 'antd';
 import { InstagramOutlined, FacebookOutlined, EnvironmentOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import './landing.css';
 import iconBrunnete from '../../assets/images/cocinero.png';
@@ -16,10 +17,33 @@ const LandingPage: React.FC = () => {
     const specialsRef = useRef<HTMLDivElement>(null);
     const drinksRef = useRef<HTMLDivElement>(null);
 
+    const [count, setCount] = useState(1);
+  
+    const handleIncrement = () => {
+      setCount(count + 1);
+    };
+  
+    const handleDecrement = () => {
+      if (count > 1) {
+        setCount(count - 1);
+      }
+    };
+
     // Función para hacer scroll a una sección
     const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
     };
+
+    const navigate = useNavigate();
+
+    const handleViewProduct = () => {
+        navigate('/viewProduct'); // Navega a la página viewProduct
+    };
+
+    const handleCart = () => {
+        navigate('/cart'); // Navega a la página Cart
+    };
+
 
     return (
         <Layout className="container-principal">
@@ -131,7 +155,10 @@ const LandingPage: React.FC = () => {
                         </div>
                         <div className="contain-actions">
                             <p className="price-Product">$7.000</p>
-                            <Button className="add-Product"><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
+                            <Button 
+                            className="add-Product"
+                            onClick={handleViewProduct} 
+                            ><ShoppingCartOutlined style={{ fontSize: '20px'}}/>Añadir al carrito</Button>
                         </div>
                     </div>
                     <div className="card-Product">
@@ -200,6 +227,16 @@ const LandingPage: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div className="shopping-card-modal flex">
+                <div className="info-order block">
+                    <h4 className="cant-Product"><span>1</span> producto</h4>
+                    <p className="price-Product">$7.000</p>
+                </div>
+                <Button className="view-Product-Order"
+                 onClick={handleCart}  
+                 >Ver Carrito</Button>
             </div>
 
             {/* Footer */}

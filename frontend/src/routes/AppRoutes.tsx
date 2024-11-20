@@ -10,25 +10,28 @@ import Users from '../components/users/users';
 import CajaTemp from '../components/caja/caja';
 import Productos from '../components/productos/productos';
 import LandingPage from '../components/public/landingPage';
+import ViewProduct from '../components/public/viewProduct';
+import Cart from '../components/public/cart';
 
 const AppRoutes = () => {
   const location = useLocation();
 
-  const hideHeaderPaths = ['/', '/register', '/landing'];
+  const hideHeaderPaths = ['/', '/register', '/landing', '/viewProduct', '/cart'];
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
 
   useEffect(() => {
-    if (location.pathname === '/landing') {
-      document.body.style.backgroundColor = '#2d2c36'; 
+    if (location.pathname === '/landing' || location.pathname === '/viewProduct' || location.pathname === '/cart') {
+      document.body.style.backgroundColor = '#2d2c36';
     } else {
-      document.body.style.backgroundColor = ''; 
-    }
-
-    return () => {
       document.body.style.backgroundColor = '';
+    }
+  
+    return () => {
+      document.body.style.backgroundColor = ''; 
     };
   }, [location.pathname]);
 
+  
   return (
     <>
       {shouldShowHeader && <AppHeader />}
@@ -37,6 +40,9 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Login />} />
         <Route path="/landing" element={<LandingPage />} />
+        <Route path="/viewProduct" element={<ViewProduct />} />
+        <Route path="/cart" element={<Cart />} />
+
 
         {/* Rutas protegidas solo para Gerente */}
         <Route element={<ProtectedRoute requiredGroup="Gerente" />}>
