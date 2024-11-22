@@ -6,6 +6,7 @@ import AddVentaModal from './modal/addVentaModal';
 import EditVentaModal from './modal/EditVentaModal';
 import { obtenerVentas, eliminarVenta } from '../../services/ventas_services';
 
+
 const { Sider, Content } = Layout;
 
 interface Producto {
@@ -29,6 +30,7 @@ const Ventas: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [total, setTotal] = useState(0);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
 
     const fetchVentas = async (page = 1, pageSize = 10) => {
         try {
@@ -42,7 +44,10 @@ const Ventas: React.FC = () => {
                         .map((p) => `${p.nombre_producto || 'Producto desconocido'} (x${p.cantidad || 0})`) 
                         .join(', '),
                     turno: venta.turno || 'Sin turno', 
-                    montoTotal: venta.monto_total || 0 
+                    montoTotal: venta.monto_total || 0 ,
+                    estado_pedido: venta.estado_pedido || "",
+                    pago: venta.pago || "",
+                    facturacion: venta.facturacion || ""
                 }));
             setData(ventasData);
             setTotal(response.count); 
@@ -102,7 +107,6 @@ const Ventas: React.FC = () => {
                 }
             },
             onCancel: () => {
-                // Aquí puedes manejar lo que sucede si el usuario cancela la acción
                 console.log('Eliminación cancelada');
             }
         });
@@ -114,12 +118,46 @@ const Ventas: React.FC = () => {
         fetchVentas(currentPage, pageSize); 
     };
 
-
+    const estadoPedidoOptions: { [key in 'ESPERA' | 'PROCESO' | 'ENTREGADO']: string } = {
+        'ESPERA': 'En espera',
+        'PROCESO': 'En progreso',
+        'ENTREGADO': 'Entregado',
+    };
+    
+    const pagoOptions: { [key in 'PAGADO' | 'NOPAGADO']: string } = {
+        'PAGADO': 'Pagado',
+        'NOPAGADO': 'No pagado',
+    };
+    
+    const facturacionOptions: { [key in 'NOFACTURADO' | 'FACTURADO']: string } = {
+        'NOFACTURADO': 'No facturado',
+        'FACTURADO': 'Facturado',
+    };
+    
+    
     const columns = [
         { title: 'Fecha', dataIndex: 'fecha', key: 'fecha' },
         { title: 'Productos', dataIndex: 'productos', key: 'productos' },
         { title: 'Monto Total (AR$)', dataIndex: 'montoTotal', key: 'montoTotal', render: (monto: any) => `$ ${Number(monto || 0).toFixed(2)}` },
         { title: 'Turno', dataIndex: 'turno', key: 'turno' },
+        { 
+            title: 'Estado de producto', 
+            dataIndex: 'estado_pedido', 
+            key: 'estado_pedido',
+            render: (text: keyof typeof estadoPedidoOptions) => estadoPedidoOptions[text] || text // Mapea el estado de producto
+        },
+        { 
+            title: 'Estado de pago', 
+            dataIndex: 'pago', 
+            key: 'pago',
+            render: (text: keyof typeof pagoOptions) => pagoOptions[text] || text // Mapea el estado de pago
+        },
+        { 
+            title: 'Estado de facturación', 
+            dataIndex: 'facturacion', 
+            key: 'facturacion',
+            render: (text: keyof typeof facturacionOptions) => facturacionOptions[text] || text // Mapea el estado de facturación
+        },
         {
             title: 'Opciones', key: 'opciones', render: (_: any, record: any) => (
                 <span>
@@ -129,6 +167,15 @@ const Ventas: React.FC = () => {
             ),
         },
     ];
+
+    const handleRowSelection = (selectedKeys: React.Key[]) => {
+        setSelectedRowKeys(selectedKeys as number[]);
+    };
+    
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: handleRowSelection,
+    };
 
     return (
         <div style={{ marginTop: '4rem' }}>
@@ -157,6 +204,7 @@ const Ventas: React.FC = () => {
                 <Layout className="layout-content">
                     <Content style={{ padding: '0px 20px', marginTop: '-20px' }}>
                         <Table
+                            rowSelection={rowSelection}
                             columns={columns}
                             dataSource={data}
                             rowKey="key"

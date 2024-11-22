@@ -15,6 +15,9 @@ interface VentaData {
     productos: Producto[];
     turno: string;
     montoTotal: number;
+    estadoPedido: string;
+    pago: string;
+    facturacion: string;
 }
 
 
@@ -35,6 +38,9 @@ export const crearVenta = async (ventaData: VentaData) => {
             })),
             turno: ventaData.turno,
             monto_total: ventaData.montoTotal,
+            estado_pedido: ventaData.estadoPedido,
+            pago: ventaData.pago,
+            facturacion: ventaData.facturacion
         };
 
         const response = await axios.post(
@@ -85,6 +91,9 @@ interface VentaResponse {
     fecha: string;
     turno: string;
     monto_total: number;
+    estado_pedido: string;
+    pago: string;
+    facturacion: string;
     productos: { producto: string; cantidad: number, nombre_producto: string, precio_prod: number;  }[];
 }
 
@@ -141,6 +150,7 @@ export const obtenerVentaPorId = async (id: number) => {
 };
 
 export const editarVenta = async (id: number, ventaData: any) => {
+    console.log("ventada", ventaData)
     try {
         const token = localStorage.getItem('token');
         const response = await axios.put(`${BASE_URL_2}ventas/${id}/detalle/`, ventaData, {

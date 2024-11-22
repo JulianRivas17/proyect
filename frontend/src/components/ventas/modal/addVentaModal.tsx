@@ -22,13 +22,16 @@ interface ProductoDisponible {
 interface AddVentaModalProps {
     visible: boolean;
     onCancel: () => void;
-    onSave: (fecha: Dayjs | null, productos: Producto[], turno: string, montoTotal: number) => void;
+    onSave: (fecha: Dayjs | null, productos: Producto[], turno: string, montoTotal: number, estadoPedido: string, pago: string, facturacion: string) => void;
 }
 
 const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave }) => {
-    const [fecha, setFecha] = useState<Dayjs | null>(null);
+    const [fecha] = useState<Dayjs>(dayjs()); 
     const [productos, setProductos] = useState<Producto[]>([]);
     const [turno, setTurno] = useState<string>('');
+    const [facturacion, setFacturacion] = useState<string>('');
+    const [pago, setPago] = useState<string>('');
+    const [estadoPedido, setEstadoPedido] = useState<string>('');
     const [montoTotal, setMontoTotal] = useState<number>(0);
     const [selectedProductId, setSelectedProductId] = useState<number | null>(null); // Cambia a ID
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
@@ -43,11 +46,13 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
 
 
     const resetForm = () => {
-        setFecha(null);
         setProductos([]);
         setTurno('');
-        setMontoTotal(0);   
+        setMontoTotal(0);
         setSelectedProductId(null);
+        setEstadoPedido("");
+        setPago("");
+        setFacturacion("");
         setSelectedQuantity(1);
     };
 
@@ -79,7 +84,7 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                 setMontoTotal(newMontoTotal);
 
                 setSelectedProductId(null);
-                setSelectedQuantity(1);  
+                setSelectedQuantity(1);
             }
         }
     };
@@ -102,12 +107,15 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
             productos,
             turno,
             montoTotal,
+            estadoPedido,
+            pago,
+            facturacion
         };
 
         try {
             await crearVenta(ventaData);
             message.success("Venta creada con éxito");
-            onSave(fecha, productos, turno, montoTotal);  // Actualiza el estado principal
+            onSave(fecha, productos, turno, montoTotal, facturacion, pago, estadoPedido);
             onCancel();  // Cierra el modal
         } catch (error) {
             message.error("Error al crear la venta. Intenta nuevamente.");
@@ -128,8 +136,8 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                 <label>Fecha*</label>
                 <DatePicker
                     style={{ width: '100%' }}
-                    onChange={(date) => setFecha(date)}
-                    value={fecha}
+                    value={fecha} // Mostrar la fecha actual
+                    disabled // Deshabilitar la edición del campo
                 />
             </div>
 
@@ -185,6 +193,46 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                     <Option value="Mañana">Mañana</Option>
                     <Option value="Tarde">Tarde</Option>
                     <Option value="Noche">Noche</Option>
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Estado Pedido*</label>
+                <Select
+                    placeholder="Elige un turno"
+                    style={{ width: '100%' }}
+                    value={estadoPedido}
+                    onChange={(value) => setEstadoPedido(value)}
+                >
+                    <Option value="ENESPERA">En espera</Option>
+                    <Option value="ENPROCESO">En proceso</Option>
+                    <Option value="ENTREGADO">Entregado</Option>
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Pago*</label>
+                <Select
+                    placeholder="Elige un turno"
+                    style={{ width: '100%' }}
+                    value={pago}
+                    onChange={(value) => setPago(value)}
+                >
+                    <Option value="PAGADO">Pagado</Option>
+                    <Option value="NOPAGADO">No pagado</Option>
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Facturación*</label>
+                <Select
+                    placeholder="Elige un turno"
+                    style={{ width: '100%' }}
+                    value={facturacion}
+                    onChange={(value) => setFacturacion(value)}
+                >
+                    <Option value="NOFACTURADO">No facturado</Option>
+                    <Option value="FACTURADO">Facturado</Option>
                 </Select>
             </div>
 
