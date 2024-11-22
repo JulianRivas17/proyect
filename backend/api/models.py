@@ -7,6 +7,9 @@ class Venta(models.Model):
     monto_total = models.DecimalField(max_digits=10, decimal_places=2)
     turno = models.CharField(max_length=50)
     hora_venta = models.TimeField()
+    estado_pedido = models.CharField(max_length=100, default="")
+    pago = models.CharField(max_length=100, default="")
+    facturacion = models.CharField(max_length=100, default="")
 
     def __str__(self):
         return f"Venta {self.id} - {self.fecha}"

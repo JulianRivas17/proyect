@@ -21,14 +21,17 @@ interface ProductoDisponible {
 
 interface EditVentaModalProps {
     ventaId: number;
-    onEditComplete: () => void; // Se llama cuando la edición se complete para recargar los datos en el componente principal
+    onEditComplete: () => void;
 }
 
 const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete }) => {
-    const [visible, setVisible] = useState<boolean>(true); // Control interno de visibilidad
+    const [visible, setVisible] = useState<boolean>(true);
     const [fecha, setFecha] = useState<Dayjs | null>(null);
     const [productos, setProductos] = useState<Producto[]>([]);
     const [turno, setTurno] = useState<string>('');
+    const [estadoPedido, setEstadoPedido] = useState<string>(''); // Nuevo estado
+    const [pago, setPago] = useState<string>(''); // Nuevo estado
+    const [facturacion, setFacturacion] = useState<string>(''); // Nuevo estado
     const [montoTotal, setMontoTotal] = useState<number>(0);
     const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
@@ -41,7 +44,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
 
     const closeModal = () => {
         setVisible(false);
-        onEditComplete(); // Llamamos a la función de callback para que el componente principal recargue los datos
+        onEditComplete();
     };
 
     const cargarVenta = async (id: number) => {
@@ -49,7 +52,10 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             const venta = await obtenerVentaPorId(id);
             setFecha(dayjs(venta.fecha));
             setTurno(venta.turno);
-            
+            setEstadoPedido(venta.estado_pedido);  // Cargar el estado del pedido
+            setPago(venta.pago);  // Cargar el estado de pago
+            setFacturacion(venta.facturacion);  // Cargar el estado de facturación
+
             const productosConPrecio: Producto[] = venta.productos.map((prod: any) => {
                 return {
                     id: prod.producto,
@@ -59,7 +65,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                 };
             });
             setProductos(productosConPrecio);
-    
+
             const total = productosConPrecio.reduce((acc: number, prod: Producto) => acc + prod.precio * prod.cantidad, 0);
             setMontoTotal(total);
         } catch (error) {
@@ -111,12 +117,15 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             })),
             turno,
             monto_total: montoTotal,
+            estado_pedido: estadoPedido,
+            pago,
+            facturacion
         };
-    
+
         try {
             await editarVenta(ventaId, ventaData);
             message.success("Venta editada con éxito");
-            closeModal(); // Cierra el modal tras guardar
+            closeModal();
         } catch (error) {
             message.error("Error al editar la venta");
         }
@@ -126,11 +135,11 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
         <Modal
             title="Editar Venta"
             visible={visible}
-            onCancel={closeModal}  // Función para cerrar el modal
-            onOk={handleSave}      // Guardar cambios y cerrar
+            onCancel={closeModal}
+            onOk={handleSave}
             okText="Guardar cambios"
             cancelText="Cancelar"
-            destroyOnClose={true}  // Destruir el contenido del modal al cerrarse
+            destroyOnClose={true}
         >
             <div>
                 <label>Fecha*</label>
@@ -193,6 +202,46 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     <Option value="Mañana">Mañana</Option>
                     <Option value="Tarde">Tarde</Option>
                     <Option value="Noche">Noche</Option>
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Estado Pedido*</label>
+                <Select
+                    placeholder="Elige un estado"
+                    style={{ width: '100%' }}
+                    value={estadoPedido}
+                    onChange={(value) => setEstadoPedido(value)}
+                >
+                    <Option value="ESPERA">En espera</Option>
+                    <Option value="PROCESO">En progreso</Option>
+                    <Option value="ENTREGADO">Entregado</Option>
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Pago*</label>
+                <Select
+                    placeholder="Elige un estado"
+                    style={{ width: '100%' }}
+                    value={pago}
+                    onChange={(value) => setPago(value)}
+                >
+                    <Option value="PAGADO">Pagado</Option>
+                    <Option value="NOPAGADO">No pagado</Option>
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Facturación*</label>
+                <Select
+                    placeholder="Elige un estado"
+                    style={{ width: '100%' }}
+                    value={facturacion}
+                    onChange={(value) => setFacturacion(value)}
+                >
+                    <Option value="NOFACTURADO">No facturado</Option>
+                    <Option value="FACTURADO">Facturado</Option>
                 </Select>
             </div>
 

@@ -14,7 +14,7 @@ class VentaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Venta
-        fields = ['id', 'fecha', 'monto_total', 'turno', 'hora_venta', 'productos']
+        fields = ['id', 'fecha', 'monto_total', 'turno', 'hora_venta', 'productos', 'estado_pedido', 'pago', 'facturacion']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -41,6 +41,9 @@ class VentaSerializer(serializers.ModelSerializer):
         instance.fecha = validated_data.get('fecha', instance.fecha)
         instance.monto_total = validated_data.get('monto_total', instance.monto_total)
         instance.turno = validated_data.get('turno', instance.turno)
+        instance.estado_pedido = validated_data.get('estado_pedido', instance.estado_pedido)
+        instance.pago = validated_data.get('pago', instance.pago)
+        instance.facturacion = validated_data.get('facturacion', instance.facturacion)
         instance.save()
 
         existing_productos = {prod.producto_id: prod for prod in VentaProducto.objects.filter(venta=instance)}
