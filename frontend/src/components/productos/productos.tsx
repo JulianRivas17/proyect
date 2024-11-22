@@ -79,6 +79,8 @@ const Productos: React.FC = () => {
     const columns = [
         { title: 'Nombre', dataIndex: 'nombre_prod', key: 'nombre_prod' },
         { title: 'Precio', dataIndex: 'precio_prod', key: 'precio_prod' },
+        { title: 'Categoria', dataIndex: 'category', key: 'category' },
+        { title: 'Descripción', dataIndex: 'description', key: 'description' },
         {
             title: 'Imagen',
             dataIndex: 'image_url',
