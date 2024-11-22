@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Card, Menu, Layout, Button, Carousel, Input } from "antd";
+import { Layout, Button, Input } from "antd";
 import {
   InstagramOutlined,
   FacebookOutlined,
@@ -10,38 +10,31 @@ import {
 import "./landing.css";
 import iconBrunnete from "../../assets/images/cocinero.png";
 
-const { Content, Footer } = Layout;
-const { Meta } = Card;
+const { Footer } = Layout;
 
 const ViewProduct: React.FC = () => {
-  // Define los refs para cada sección
-  const mostSoldRef = useRef<HTMLDivElement>(null);
-  const combosRef = useRef<HTMLDivElement>(null);
-  const specialsRef = useRef<HTMLDivElement>(null);
-  const drinksRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const producto = location.state?.producto;
 
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(1); // Cantidad seleccionada
+  const [totalPrice, setTotalPrice] = useState<number>(
+    producto?.precio_prod || 0
+  ); // Precio total dinámico
 
   const handleIncrement = () => {
-    setCount(count + 1);
+    const newCount = count + 1;
+    setCount(newCount);
+    setTotalPrice(newCount * producto.precio_prod); // Actualizar precio total
   };
 
   const handleDecrement = () => {
     if (count > 1) {
-      setCount(count - 1);
+      const newCount = count - 1;
+      setCount(newCount);
+      setTotalPrice(newCount * producto.precio_prod); // Actualizar precio total
     }
   };
-
-  // Función para hacer scroll a una sección
-  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
-    ref.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // Accede al producto desde el estado
-  const producto = location.state?.producto;
 
   const handleLandingPage = () => {
     navigate("/landing"); // Regresa a la página principal
@@ -108,10 +101,13 @@ const ViewProduct: React.FC = () => {
         </div>
       </div>
 
+      {/* Carrito dinámico */}
       <div className="shopping-card-modal">
         <div className="info-order">
           <h2 className="title-section-order">Tu pedido</h2>
-          <p className="price-Product">$7.000</p>
+          <p className="price-Product">
+            ${totalPrice.toLocaleString("es-ES")}
+          </p>
         </div>
         <div className="add-order">
           <div className="counter-container">
