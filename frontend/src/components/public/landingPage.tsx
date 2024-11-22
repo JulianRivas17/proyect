@@ -64,8 +64,8 @@ const LandingPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const handleViewProduct = () => {
-    navigate("/viewProduct"); // Navega a la página viewProduct
+  const handleViewProduct = (producto: ProductoDisponible) => {
+    navigate("/viewProduct", { state: { producto } }); // Navega a la página con el producto seleccionado
   };
 
   const handleCart = () => {
@@ -160,7 +160,10 @@ const LandingPage: React.FC = () => {
                           {producto.nombre_prod}
                         </h3>
                         <p className="price-Product">${precioFormateado}</p>
-                        <Button className="add-Product">
+                        <Button
+                          className="add-Product"
+                          onClick={() => handleViewProduct(producto)}
+                        >
                           <ShoppingCartOutlined style={{ fontSize: "20px" }} />
                           Añadir al carrito
                         </Button>
@@ -201,7 +204,10 @@ const LandingPage: React.FC = () => {
                   </div>
                   <div className="contain-actions">
                     <p className="price-Product">${precioFormateado}</p>
-                    <Button className="add-Product" onClick={handleViewProduct}>
+                    <Button
+                      className="add-Product"
+                      onClick={() => handleViewProduct(producto)}
+                    >
                       <ShoppingCartOutlined style={{ fontSize: "20px" }} />
                       Añadir al carrito
                     </Button>
@@ -239,7 +245,10 @@ const LandingPage: React.FC = () => {
                   </div>
                   <div className="contain-actions">
                     <p className="price-Product">${precioFormateado}</p>
-                    <Button className="add-Product">
+                    <Button
+                      className="add-Product"
+                      onClick={() => handleViewProduct(producto)} 
+                    >
                       <ShoppingCartOutlined style={{ fontSize: "20px" }} />
                       Añadir al carrito
                     </Button>
@@ -277,7 +286,10 @@ const LandingPage: React.FC = () => {
                   </div>
                   <div className="contain-actions">
                     <p className="price-Product">${precioFormateado}</p>
-                    <Button className="add-Product">
+                    <Button
+                      className="add-Product"
+                      onClick={() => handleViewProduct(producto)} 
+                    >
                       <ShoppingCartOutlined style={{ fontSize: "20px" }} />
                       Añadir al carrito
                     </Button>
