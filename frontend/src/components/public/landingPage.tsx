@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import "./landing.css";
 import iconBrunnete from "../../assets/images/cocinero.png";
+import { useCart } from "./CartContext";
 
 /* Productos */
 import {
@@ -20,6 +21,7 @@ import { obtenerURLImagen } from "../../services/productosService";
 
 const { Content, Footer } = Layout;
 const { Meta } = Card;
+
 const LandingPage: React.FC = () => {
   // Define los refs para cada sección
   const [productos, setProdutos] = useState<ProductoDisponible[]>([]);
@@ -71,6 +73,34 @@ const LandingPage: React.FC = () => {
   const handleCart = () => {
     navigate("/cart"); // Navega a la página Cart
   };
+
+  const { calculateTotal, calculateTotalItems } = useCart(); // Usa el método para obtener el total
+
+  const totalCarrito = calculateTotal(); // Calcula el total
+  const totalProductos = calculateTotalItems(); // Calcula el total de productos
+
+  const footerRef = useRef<HTMLDivElement>(null);
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (footerRef.current) {
+        const footerTop = footerRef.current.getBoundingClientRect().top;
+        const viewportHeight = window.innerHeight;
+
+        // Si el footer está visible en la pantalla
+        if (footerTop <= viewportHeight) {
+          setIsSticky(true);
+        } else {
+          setIsSticky(false);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
 
   return (
     <Layout className="container-principal">
@@ -189,7 +219,7 @@ const LandingPage: React.FC = () => {
                 producto.precio_prod.toLocaleString("es-ES");
 
               return (
-                <div className="card-Product" key={producto.id}>
+                <div className="card-Product landing" key={producto.id}>
                   <img
                     src={urlImagen}
                     alt={producto.nombre_prod}
@@ -230,7 +260,7 @@ const LandingPage: React.FC = () => {
                 producto.precio_prod.toLocaleString("es-ES");
 
               return (
-                <div className="card-Product" key={producto.id}>
+                <div className="card-Product landing" key={producto.id}>
                   <img
                     src={urlImagen}
                     alt={producto.nombre_prod}
@@ -247,7 +277,7 @@ const LandingPage: React.FC = () => {
                     <p className="price-Product">${precioFormateado}</p>
                     <Button
                       className="add-Product"
-                      onClick={() => handleViewProduct(producto)} 
+                      onClick={() => handleViewProduct(producto)}
                     >
                       <ShoppingCartOutlined style={{ fontSize: "20px" }} />
                       Añadir al carrito
@@ -258,7 +288,7 @@ const LandingPage: React.FC = () => {
             })}
         </div>
 
-        <div ref={drinksRef} style={{ padding: "50px 0" }}>
+        <div ref={drinksRef} style={{ padding: "50px 0 180px 0" }}>
           <h2 className="title-section-menu">Bebidas</h2>
           {/* Contenido de "Bebidas" */}
           {productos
@@ -271,7 +301,7 @@ const LandingPage: React.FC = () => {
                 producto.precio_prod.toLocaleString("es-ES");
 
               return (
-                <div className="card-Product" key={producto.id}>
+                <div className="card-Product landing" key={producto.id}>
                   <img
                     src={urlImagen}
                     alt={producto.nombre_prod}
@@ -288,7 +318,7 @@ const LandingPage: React.FC = () => {
                     <p className="price-Product">${precioFormateado}</p>
                     <Button
                       className="add-Product"
-                      onClick={() => handleViewProduct(producto)} 
+                      onClick={() => handleViewProduct(producto)}
                     >
                       <ShoppingCartOutlined style={{ fontSize: "20px" }} />
                       Añadir al carrito
@@ -300,24 +330,42 @@ const LandingPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="shopping-card-modal flex">
-        <div className="info-order block">
-          <h4 className="cant-Product">
-            <span>1</span> producto
-          </h4>
-          <p className="price-Product">$7.000</p>
+      {/* Mostrar el componente solo si hay productos en el carrito */}
+      {totalProductos > 0 && (
+        <div className="shopping-card-modal flex"
+        style={{
+          bottom: isSticky ? "80px" : "20px",
+        }}
+        >
+          <div className="info-order block">
+            <h4 className="cant-Product">
+              <span>{totalProductos}</span> producto
+              {totalProductos > 1 ? "s" : ""}
+            </h4>
+            <p className="price-Product">
+              ${totalCarrito.toLocaleString("es-ES")}
+            </p>
+          </div>
+          <Button
+            className="view-Product-Order"
+            onClick={() => navigate("/cart")}
+          >
+            Ver Carrito
+          </Button>
         </div>
-        <Button className="view-Product-Order" onClick={handleCart}>
-          Ver Carrito
-        </Button>
-      </div>
+      )}
 
       {/* Footer */}
       <Footer
+        ref={footerRef}
+        className="footer-Custom"
         style={{
           textAlign: "center",
           backgroundColor: "#393844",
           color: "white",
+          position: "absolute",
+            bottom: "0",
+            width: "640px"
         }}
       >
         ©2024 Brunette. Todos los derechos reservados.

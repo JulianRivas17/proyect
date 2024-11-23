@@ -3,13 +3,18 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { CartProvider } from './components/public/CartContext'; // Importa CartProvider
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <App />
+    {/*Añadi CartProvider para el carrito de landing */}
+    <CartProvider>
+      <App />
+    </CartProvider>
   </React.StrictMode>
 );
 
