@@ -517,12 +517,17 @@ h2.title-section-order {
     backdrop-filter: blur(6px);
     background: color-mix(in srgb, var(--background-black) 60%, #0000);
 }
- 
+
+.ant-modal-root .ant-modal-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+}
 
 .ant-modal {
-    width: 400px !important;
-    padding-bottom: 24px;
-    top: 250px;
+    top: 0px;
+    padding-bottom: 0px;
 }
 
 .empty-cart {
