@@ -1,6 +1,6 @@
 # models.py
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 class Venta(models.Model):
     fecha = models.DateField()
@@ -11,7 +11,7 @@ class Venta(models.Model):
     pago = models.CharField(max_length=100, default="")
     facturacion = models.CharField(max_length=100, default="")
     nombre_venta = models.CharField(max_length=100, default="")
-
+    caja = models.ForeignKey('Caja', related_name='ventas', on_delete=models.CASCADE, null=True)
     def __str__(self):
         return f"Venta {self.id} - {self.fecha}"
 
@@ -41,6 +41,8 @@ class Caja(models.Model):
     fecha_hs_cierre_caja = models.DateTimeField(blank=True, null=True)
     monto_inicial_caja = models.DecimalField(max_digits=10, decimal_places=2)
     total_saldo_caja = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    usuario_apertura = models.ForeignKey(User, related_name='apertura_cajas', on_delete=models.SET_NULL, null=True, blank=True)
+    usuario_cierre = models.ForeignKey(User, related_name='cierre_cajas', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         estado = "Abierta" if self.estado_caja else "Cerrada"
