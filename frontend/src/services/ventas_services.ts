@@ -18,6 +18,7 @@ interface VentaData {
     estadoPedido: string;
     pago: string;
     facturacion: string;
+    nombreCliente: string;
 }
 
 
@@ -40,7 +41,8 @@ export const crearVenta = async (ventaData: VentaData) => {
             monto_total: ventaData.montoTotal,
             estado_pedido: ventaData.estadoPedido,
             pago: ventaData.pago,
-            facturacion: ventaData.facturacion
+            facturacion: ventaData.facturacion,
+            nombre_venta: ventaData.nombreCliente
         };
 
         const response = await axios.post(

@@ -22,11 +22,11 @@ interface ProductoDisponible {
 interface AddVentaModalProps {
     visible: boolean;
     onCancel: () => void;
-    onSave: (fecha: Dayjs | null, productos: Producto[], turno: string, montoTotal: number, estadoPedido: string, pago: string, facturacion: string) => void;
+    onSave: (fecha: Dayjs | null, productos: Producto[], turno: string, montoTotal: number, estadoPedido: string, pago: string, facturacion: string, nombreCliente: string) => void;
 }
 
 const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave }) => {
-    const [fecha] = useState<Dayjs>(dayjs()); 
+    const [fecha] = useState<Dayjs>(dayjs());
     const [productos, setProductos] = useState<Producto[]>([]);
     const [turno, setTurno] = useState<string>('');
     const [facturacion, setFacturacion] = useState<string>('');
@@ -36,6 +36,7 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
     const [selectedProductId, setSelectedProductId] = useState<number | null>(null); // Cambia a ID
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
     const [productosDisponibles, setProductosDisponibles] = useState<ProductoDisponible[]>([]);
+    const [nombreCliente, setNombreCliente] = useState<string>("");
 
     useEffect(() => {
         if (visible) {
@@ -109,13 +110,14 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
             montoTotal,
             estadoPedido,
             pago,
-            facturacion
+            facturacion,
+            nombreCliente
         };
 
         try {
             await crearVenta(ventaData);
             message.success("Venta creada con éxito");
-            onSave(fecha, productos, turno, montoTotal, facturacion, pago, estadoPedido);
+            onSave(fecha, productos, turno, montoTotal, facturacion, pago, estadoPedido, nombreCliente);
             onCancel();  // Cierra el modal
         } catch (error) {
             message.error("Error al crear la venta. Intenta nuevamente.");
@@ -136,8 +138,8 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                 <label>Fecha*</label>
                 <DatePicker
                     style={{ width: '100%' }}
-                    value={fecha} // Mostrar la fecha actual
-                    disabled // Deshabilitar la edición del campo
+                    value={fecha}
+                    disabled
                 />
             </div>
 
@@ -181,7 +183,16 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                     ))}
                 </div>
             </div>
-
+            <div style={{ marginTop: '1rem' }}>
+                <label>Nombre Cliente*</label>
+                <Input
+                    type="text"
+                    placeholder="Ingresa el nombre del cliente"
+                    style={{ width: '100%' }}
+                    value={nombreCliente}
+                    onChange={(e) => setNombreCliente(e.target.value)} // Guardar el valor en el estado
+                />
+            </div>
             <div style={{ marginTop: '1rem' }}>
                 <label>Turno*</label>
                 <Select

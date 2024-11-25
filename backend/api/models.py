@@ -10,6 +10,7 @@ class Venta(models.Model):
     estado_pedido = models.CharField(max_length=100, default="")
     pago = models.CharField(max_length=100, default="")
     facturacion = models.CharField(max_length=100, default="")
+    nombre_venta = models.CharField(max_length=100, default="")
 
     def __str__(self):
         return f"Venta {self.id} - {self.fecha}"

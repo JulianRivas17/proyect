@@ -36,6 +36,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
     const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
     const [productosDisponibles, setProductosDisponibles] = useState<ProductoDisponible[]>([]);
+    const [nombreCliente, setNombreCliente] = useState<string>("");
 
     useEffect(() => {
         cargarVenta(ventaId);
@@ -55,7 +56,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             setEstadoPedido(venta.estado_pedido);  // Cargar el estado del pedido
             setPago(venta.pago);  // Cargar el estado de pago
             setFacturacion(venta.facturacion);  // Cargar el estado de facturación
-
+            setNombreCliente(venta.nombre_venta)
             const productosConPrecio: Producto[] = venta.productos.map((prod: any) => {
                 return {
                     id: prod.producto,
@@ -119,7 +120,8 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             monto_total: montoTotal,
             estado_pedido: estadoPedido,
             pago,
-            facturacion
+            facturacion,
+            nombre_venta: nombreCliente
         };
 
         try {
@@ -190,7 +192,16 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     ))}
                 </div>
             </div>
-
+            <div style={{ marginTop: '1rem' }}>
+                <label>Nombre Cliente*</label>
+                <Input
+                    type="text"
+                    placeholder="Ingresa el nombre del cliente"
+                    style={{ width: '100%' }}
+                    value={nombreCliente}
+                    onChange={(e) => setNombreCliente(e.target.value)} 
+                />
+            </div>
             <div style={{ marginTop: '1rem' }}>
                 <label>Turno*</label>
                 <Select
