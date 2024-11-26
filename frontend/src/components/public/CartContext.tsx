@@ -9,14 +9,36 @@ interface CartItem {
   descripcion: string;
 }
 
+// interface CartContextType {
+//   cart: CartItem[];
+//   addToCart: (item: CartItem) => void;
+//   removeFromCart: (id: number) => void;
+//   clearCart: () => void;
+//   calculateTotal: () => number;
+//   calculateTotalItems: () => number;
+//   updateQuantity: (id: number, quantity: number) => void;
+// }
+
+
 interface CartContextType {
   cart: CartItem[];
+  cliente: string;
+  setCliente: (nombre: string) => void;
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
   calculateTotal: () => number;
   calculateTotalItems: () => number;
   updateQuantity: (id: number, quantity: number) => void;
+  order: Order | null; // Pedido actual
+  setOrder: (order: Order) => void; // Método para guardar un pedido
+}
+
+interface Order {
+  cliente: string;
+  productos: CartItem[];
+  total: number;
+  fecha: string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -33,6 +55,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [cliente, setCliente] = useState<string>("");
+  const [order, setOrder] = useState<Order | null>(null); // Pedido actual
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
@@ -58,6 +82,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const clearCart = () => {
     setCart([]);
+    setCart([]);
+    setCliente("");
+    setOrder(null);
   };
 
   const calculateTotal = () => {
@@ -84,15 +111,32 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
+    // <CartContext.Provider
+    //   value={{
+    //     cart,
+    //     addToCart,
+    //     removeFromCart,
+    //     clearCart,
+    //     calculateTotal,
+    //     calculateTotalItems,
+    //     updateQuantity, // Exporta el nuevo método
+    //   }}
+    // >
+    //   {children}
+    // </CartContext.Provider>
     <CartContext.Provider
       value={{
         cart,
+        cliente,
+        setCliente,
         addToCart,
         removeFromCart,
         clearCart,
         calculateTotal,
         calculateTotalItems,
-        updateQuantity, // Exporta el nuevo método
+        updateQuantity,
+        order,
+        setOrder, // Exporta setOrder
       }}
     >
       {children}
