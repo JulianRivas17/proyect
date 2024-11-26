@@ -45,6 +45,7 @@ const CajaTemp: React.FC = () => {
     const formattedData = data.map((caja: any) => ({
       key: caja.id,
       fecha: moment(caja.fecha_hs_aper_caja).format('DD/MM/YYYY'),
+      nombre: caja.nombre,
       estado: caja.estado_caja ? 'Abierta' : 'Cerrada',
       montoIni: parseFloat(caja.monto_inicial_caja),
       montoFin: caja.total_saldo_caja ? parseFloat(caja.total_saldo_caja) : 0,
@@ -90,6 +91,7 @@ const CajaTemp: React.FC = () => {
 
   const columns = [
     { title: 'Fecha', dataIndex: 'fecha', sorter: (a: any, b: any) => moment(a.fecha, 'DD/MM/YYYY').unix() - moment(b.fecha, 'DD/MM/YYYY').unix() },
+    { title: 'Nombre Caja', dataIndex: 'nombre'},
     { title: 'Estado Caja', dataIndex: 'estado' },
     { 
       title: 'Monto Inicial', 

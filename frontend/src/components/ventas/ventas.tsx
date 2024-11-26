@@ -118,9 +118,9 @@ const Ventas: React.FC = () => {
         fetchVentas(currentPage, pageSize); 
     };
 
-    const estadoPedidoOptions: { [key in 'ENESPERA' | 'PROCESO' | 'ENTREGADO']: string } = {
+    const estadoPedidoOptions: { [key in 'ENESPERA' | 'ENPROCESO' | 'ENTREGADO']: string } = {
         'ENESPERA': 'En espera',
-        'PROCESO': 'En progreso',
+        'ENPROCESO': 'En proceso',
         'ENTREGADO': 'Entregado',
     };
     
