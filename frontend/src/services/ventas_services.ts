@@ -10,7 +10,7 @@ interface Producto {
 }
 
 
-interface VentaData {
+export interface VentaData {
     fecha: Dayjs | null;
     productos: Producto[];
     turno: string;
@@ -19,20 +19,19 @@ interface VentaData {
     pago: string;
     facturacion: string;
     nombreCliente: string;
-    cajaId: number;
+    cajaId: number | null;
 }
 
 const BASE_URL_2 = 'http://localhost:8000/';
 
 export const crearVenta = async (ventaData: VentaData) => {
     try {
-        const token = localStorage.getItem('token'); // Obtén el token del localStorage
-
+        // Generar el payload para la solicitud
         const payload = {
             fecha: ventaData.fecha ? ventaData.fecha.format('YYYY-MM-DD') : null,
             hora_venta: dayjs().format('HH:mm:ss'), // Hora actual
             productos: ventaData.productos.map(p => ({
-                producto: p.id, // Cambia `p.nombre` a `p.id` para enviar el ID del producto
+                producto: p.id, // ID del producto
                 cantidad: p.cantidad,
             })),
             turno: ventaData.turno,
@@ -41,25 +40,22 @@ export const crearVenta = async (ventaData: VentaData) => {
             pago: ventaData.pago,
             facturacion: ventaData.facturacion,
             nombre_venta: ventaData.nombreCliente,
-            caja_id: ventaData.cajaId
+            caja_id: ventaData.cajaId,
         };
 
+        // No enviar encabezados si no es necesario
         const response = await axios.post(
             `${BASE_URL_2}ventas/crear-venta/`,
-            payload,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
+            payload
         );
 
-        return response.data; 
+        return response.data;
     } catch (error) {
         console.error("Error al crear la venta:", error);
-        throw error; 
+        throw error;
     }
 };
+
 
 export interface ProductoDisponible {
     id: number;

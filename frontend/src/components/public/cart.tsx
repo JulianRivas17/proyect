@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import dayjs from 'dayjs';
 import { useNavigate } from "react-router-dom";
 import { Layout, Button, Input, Spin, Modal, Empty, message } from "antd";
 import {
@@ -9,6 +10,7 @@ import {
 import "./landing.css";
 import iconBrunnete from "../../assets/images/cocinero.png";
 import { useCart } from "./CartContext";
+import { crearVenta, VentaData } from "../../services/ventas_services";
 
 const { Footer } = Layout;
 
@@ -23,6 +25,18 @@ const Cart: React.FC = () => {
   const [isOrderModalVisible, setIsOrderModalVisible] = useState(false); // Controla el modal de hacer pedido
   const [name, setName] = useState(""); // Almacena el nombre del cliente
   const [errorMessage, setErrorMessage] = useState("");
+
+const [venta, setVenta] = useState<VentaData>({
+    fecha: null,
+    productos: [],
+    turno: '',
+    montoTotal: 0,
+    estadoPedido: '',
+    pago: '',
+    facturacion: '',
+    nombreCliente: '',
+    cajaId: 0
+  });
 
   const handleLandingPage = () => {
     navigate("/landing");
@@ -91,12 +105,43 @@ const Cart: React.FC = () => {
       cliente: name,
       productos: cart,
       total: totalCarrito,
-      fecha: new Date().toISOString(),
+      fecha: dayjs().toISOString(),
     };
 
     setOrder(newOrder); 
 
     console.log("Pedido registrado:", newOrder);
+    
+
+    const ventaData: VentaData = {
+      fecha: dayjs(newOrder.fecha), // Fecha del pedido
+      productos: newOrder.productos.map((producto) => ({
+        id: producto.id,
+        nombre: producto.nombre,
+        cantidad: producto.cantidad,
+        precio: producto.precioTotal,
+      })), // Mapeo de productos
+      turno: 'Mañana', // Puedes ajustar según el caso
+      montoTotal: newOrder.total, // Total del carrito
+      estadoPedido: 'ENESPERA', // Estado inicial del pedido
+      pago: 'NOPAGADO', // Estado de pago
+      facturacion: 'NOFACTURADO', // Estado de facturación
+      nombreCliente: newOrder.cliente, // Nombre del cliente
+      cajaId: null, // ID de la caja seleccionada
+    };
+    
+    try {
+      crearVenta(ventaData);
+      message.success("Venta creada con éxito");
+  } catch (error) {
+      message.error("Error al crear la venta. Intenta nuevamente.");
+      console.error("Error al crear la venta:", error);
+  }
+
+
+
+
+
     message.success(`Pedido registrado a nombre de ${name}`);
 
     clearCart(); 
