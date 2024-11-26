@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Layout, Button, Input, Spin, Modal, Empty } from "antd";
-import { LeftOutlined, DeleteOutlined, ShoppingOutlined } from "@ant-design/icons";
+import { Layout, Button, Input, Spin, Modal, Empty, message } from "antd";
+import {
+  LeftOutlined,
+  DeleteOutlined,
+  ShoppingOutlined,
+} from "@ant-design/icons";
 import "./landing.css";
 import iconBrunnete from "../../assets/images/cocinero.png";
 import { useCart } from "./CartContext";
@@ -9,12 +13,16 @@ import { useCart } from "./CartContext";
 const { Footer } = Layout;
 
 const Cart: React.FC = () => {
-  const { cart, removeFromCart, updateQuantity } = useCart();
+  const { cart, removeFromCart, updateQuantity, clearCart,setOrder } = useCart();
   const navigate = useNavigate();
 
   const [isModalVisible, setIsModalVisible] = useState(false); // Controla la visibilidad del modal
   const [selectedItem, setSelectedItem] = useState<number | null>(null); // Producto seleccionado para eliminar
   const [isLoading, setIsLoading] = useState(false); // Controla la pantalla de carga
+
+  const [isOrderModalVisible, setIsOrderModalVisible] = useState(false); // Controla el modal de hacer pedido
+  const [name, setName] = useState(""); // Almacena el nombre del cliente
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleLandingPage = () => {
     navigate("/landing");
@@ -67,6 +75,45 @@ const Cart: React.FC = () => {
     );
   }
 
+  // Mostrar modal de confirmar pedido
+  const handleOrderModal = () => {
+    setIsOrderModalVisible(true);
+  };
+
+  // Confirmar pedido
+  const handleConfirmOrder = () => {
+    if (!name.trim()) {
+      setErrorMessage("Para hacer el pedido necesitamos el nombre.");
+      return;
+    }
+
+    const newOrder = {
+      cliente: name,
+      productos: cart,
+      total: totalCarrito,
+      fecha: new Date().toISOString(),
+    };
+
+    setOrder(newOrder); 
+
+    console.log("Pedido registrado:", newOrder);
+    message.success(`Pedido registrado a nombre de ${name}`);
+
+    clearCart(); 
+
+    setIsOrderModalVisible(false);
+    setName(""); // Limpia el nombre después del pedido
+    setErrorMessage(""); // Limpia el mensaje de error
+    navigate("/landing"); // Redirige a landing después del pedido
+  };
+
+  // Cancelar pedido
+  const handleCancelOrder = () => {
+    setIsOrderModalVisible(false);
+    setName(""); // Limpia el campo de nombre
+    setErrorMessage(""); // Limpia el mensaje de error
+  };
+
   return (
     <Layout className="container-principal">
       {/* Menú de navegación */}
@@ -85,8 +132,7 @@ const Cart: React.FC = () => {
         onClick={handleLandingPage}
         type="primary"
         icon={<LeftOutlined />}
-      >
-      </Button>
+      ></Button>
 
       {cart.length === 0 ? (
         <div className="empty-cart">
@@ -133,9 +179,7 @@ const Cart: React.FC = () => {
                     />
                     <Button
                       type="text"
-                      onClick={() =>
-                        updateQuantity(item.id, item.cantidad + 1)
-                      }
+                      onClick={() => updateQuantity(item.id, item.cantidad + 1)}
                       className="counter-button"
                     >
                       +
@@ -169,6 +213,25 @@ const Cart: React.FC = () => {
             <p>Borrarás este producto de tu pedido.</p>
           </Modal>
 
+          <Modal
+            title="Confirmar Pedido"
+            visible={isOrderModalVisible}
+            onOk={handleConfirmOrder}
+            onCancel={handleCancelOrder}
+            okText="Hacer Pedido"
+            cancelText="Cancelar"
+          >
+            <p>Por favor, ingrese el nombre de quien recogerá el pedido:</p>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nombre completo"
+            />
+            {errorMessage && (
+              <p style={{ color: "red", marginTop: "8px" }}>{errorMessage}</p>
+            )}
+          </Modal>
+
           {/* Modal de total del carrito */}
           <div className="shopping-card-modal custom-m">
             <div className="info-order">
@@ -184,7 +247,9 @@ const Cart: React.FC = () => {
               >
                 Agregar más productos
               </Button>
-              <Button className="add-order-btn">Hacer Pedido</Button>
+              <Button className="add-order-btn" onClick={handleOrderModal}>
+                Hacer Pedido
+              </Button>
             </div>
           </div>
         </>
