@@ -19,12 +19,10 @@ interface VentaData {
     pago: string;
     facturacion: string;
     nombreCliente: string;
+    cajaId: number;
 }
 
-
-const BASE_URL = 'http://localhost:8000/api';
 const BASE_URL_2 = 'http://localhost:8000/';
-
 
 export const crearVenta = async (ventaData: VentaData) => {
     try {
@@ -42,7 +40,8 @@ export const crearVenta = async (ventaData: VentaData) => {
             estado_pedido: ventaData.estadoPedido,
             pago: ventaData.pago,
             facturacion: ventaData.facturacion,
-            nombre_venta: ventaData.nombreCliente
+            nombre_venta: ventaData.nombreCliente,
+            caja_id: ventaData.cajaId
         };
 
         const response = await axios.post(

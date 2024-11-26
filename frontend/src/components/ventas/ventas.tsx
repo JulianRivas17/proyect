@@ -118,8 +118,8 @@ const Ventas: React.FC = () => {
         fetchVentas(currentPage, pageSize); 
     };
 
-    const estadoPedidoOptions: { [key in 'ESPERA' | 'PROCESO' | 'ENTREGADO']: string } = {
-        'ESPERA': 'En espera',
+    const estadoPedidoOptions: { [key in 'ENESPERA' | 'PROCESO' | 'ENTREGADO']: string } = {
+        'ENESPERA': 'En espera',
         'PROCESO': 'En progreso',
         'ENTREGADO': 'Entregado',
     };

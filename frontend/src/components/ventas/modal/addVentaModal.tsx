@@ -3,6 +3,7 @@ import { Modal, Input, Select, DatePicker, Button, message } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { obtenerProductos, crearVenta } from '../../../services/ventas_services';
+import { Caja, obtenerCajasAbiertas } from '../../../services/cajaService';
 
 const { Option } = Select;
 
@@ -22,7 +23,7 @@ interface ProductoDisponible {
 interface AddVentaModalProps {
     visible: boolean;
     onCancel: () => void;
-    onSave: (fecha: Dayjs | null, productos: Producto[], turno: string, montoTotal: number, estadoPedido: string, pago: string, facturacion: string, nombreCliente: string) => void;
+    onSave: (fecha: Dayjs | null, productos: Producto[], turno: string, montoTotal: number, estadoPedido: string, pago: string, facturacion: string, nombreCliente: string, selectedCajaId: number | null) => void;
 }
 
 const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave }) => {
@@ -37,11 +38,14 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
     const [productosDisponibles, setProductosDisponibles] = useState<ProductoDisponible[]>([]);
     const [nombreCliente, setNombreCliente] = useState<string>("");
+    const [cajasDisponibles, setCajasDisponibles] = useState<Caja[]>([]);
+    const [selectedCajaId, setSelectedCajaId] = useState<number | null>(null);
 
     useEffect(() => {
         if (visible) {
             resetForm();
             cargarProductos();
+            cargarCajasAbiertas();
         }
     }, [visible]);
 
@@ -54,6 +58,8 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
         setEstadoPedido("");
         setPago("");
         setFacturacion("");
+        setNombreCliente("")
+        setSelectedCajaId(null);
         setSelectedQuantity(1);
     };
 
@@ -63,6 +69,15 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
             setProductosDisponibles(productos);
         } catch (error) {
             console.error("Error al obtener los productos:", error);
+        }
+    };
+
+    const cargarCajasAbiertas = async () => {
+        try {
+            const cajas = await obtenerCajasAbiertas();
+            setCajasDisponibles(cajas); // Guardar las cajas abiertas en el estado
+        } catch (error) {
+            console.error('Error al obtener las cajas abiertas:', error);
         }
     };
 
@@ -111,13 +126,14 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
             estadoPedido,
             pago,
             facturacion,
-            nombreCliente
+            nombreCliente,
+            cajaId: selectedCajaId || 1,
         };
 
         try {
             await crearVenta(ventaData);
             message.success("Venta creada con éxito");
-            onSave(fecha, productos, turno, montoTotal, facturacion, pago, estadoPedido, nombreCliente);
+            onSave(fecha, productos, turno, montoTotal, facturacion, pago, estadoPedido, nombreCliente, selectedCajaId);
             onCancel();  // Cierra el modal
         } catch (error) {
             message.error("Error al crear la venta. Intenta nuevamente.");
@@ -202,7 +218,6 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                     onChange={(value) => setTurno(value)}
                 >
                     <Option value="Mañana">Mañana</Option>
-                    <Option value="Tarde">Tarde</Option>
                     <Option value="Noche">Noche</Option>
                 </Select>
             </div>
@@ -244,6 +259,22 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                 >
                     <Option value="NOFACTURADO">No facturado</Option>
                     <Option value="FACTURADO">Facturado</Option>
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Seleccionar Caja*</label>
+                <Select
+                    placeholder="Selecciona una caja"
+                    style={{ width: '100%' }}
+                    value={selectedCajaId}
+                    onChange={(value) => setSelectedCajaId(value as number)} // Guardamos el id de la caja seleccionada
+                >
+                    {cajasDisponibles.map((caja) => (
+                        <Option key={caja.id} value={caja.id}>
+                            {caja.nombre}
+                        </Option>
+                    ))}
                 </Select>
             </div>
 

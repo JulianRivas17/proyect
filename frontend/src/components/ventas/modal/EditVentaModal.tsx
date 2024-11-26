@@ -3,6 +3,7 @@ import { Modal, Input, Select, DatePicker, Button, message } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { obtenerProductos, obtenerVentaPorId, editarVenta } from '../../../services/ventas_services';
 import dayjs, { Dayjs } from 'dayjs';
+import { Caja, obtenerCajasAbiertas } from '../../../services/cajaService';
 
 const { Option } = Select;
 
@@ -37,15 +38,27 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
     const [productosDisponibles, setProductosDisponibles] = useState<ProductoDisponible[]>([]);
     const [nombreCliente, setNombreCliente] = useState<string>("");
+    const [cajasDisponibles, setCajasDisponibles] = useState<Caja[]>([]); // Estado para las cajas disponibles
+    const [selectedCajaId, setSelectedCajaId] = useState<number | null>(null);
 
     useEffect(() => {
         cargarVenta(ventaId);
         cargarProductos();
+        cargarCajasAbiertas();
     }, [ventaId]);
 
     const closeModal = () => {
         setVisible(false);
         onEditComplete();
+    };
+
+    const cargarCajasAbiertas = async () => {
+        try {
+            const cajas = await obtenerCajasAbiertas();
+            setCajasDisponibles(cajas); // Guardar las cajas abiertas en el estado
+        } catch (error) {
+            console.error('Error al obtener las cajas abiertas:', error);
+        }
     };
 
     const cargarVenta = async (id: number) => {
@@ -66,9 +79,10 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                 };
             });
             setProductos(productosConPrecio);
-
+            setSelectedCajaId(venta.caja_id)
             const total = productosConPrecio.reduce((acc: number, prod: Producto) => acc + prod.precio * prod.cantidad, 0);
             setMontoTotal(total);
+
         } catch (error) {
             message.error("Error al cargar la venta");
         }
@@ -121,7 +135,8 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             estado_pedido: estadoPedido,
             pago,
             facturacion,
-            nombre_venta: nombreCliente
+            nombre_venta: nombreCliente,
+            caja_id: selectedCajaId
         };
 
         try {
@@ -199,7 +214,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     placeholder="Ingresa el nombre del cliente"
                     style={{ width: '100%' }}
                     value={nombreCliente}
-                    onChange={(e) => setNombreCliente(e.target.value)} 
+                    onChange={(e) => setNombreCliente(e.target.value)}
                 />
             </div>
             <div style={{ marginTop: '1rem' }}>
@@ -224,7 +239,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     value={estadoPedido}
                     onChange={(value) => setEstadoPedido(value)}
                 >
-                    <Option value="ESPERA">En espera</Option>
+                    <Option value="ENESPERA">En espera</Option>
                     <Option value="PROCESO">En progreso</Option>
                     <Option value="ENTREGADO">Entregado</Option>
                 </Select>
@@ -253,6 +268,22 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                 >
                     <Option value="NOFACTURADO">No facturado</Option>
                     <Option value="FACTURADO">Facturado</Option>
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Seleccionar Caja*</label>
+                <Select
+                    placeholder="Selecciona una caja"
+                    style={{ width: '100%' }}
+                    value={selectedCajaId}
+                    onChange={(value) => setSelectedCajaId(value as number)}
+                >
+                    {cajasDisponibles.map((caja) => (
+                        <Option key={caja.id} value={caja.id}>
+                            {caja.nombre}
+                        </Option>
+                    ))}
                 </Select>
             </div>
 
