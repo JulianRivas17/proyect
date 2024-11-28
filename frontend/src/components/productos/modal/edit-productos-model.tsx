@@ -77,7 +77,6 @@ const EditProductoModal: React.FC<EditProductoModalProps> = ({ visible, onClose,
 
         try {
             await onSubmit(formData); // Enviar al backend
-            message.success('Producto editado exitosamente');
             onClose();
         } catch (error) {
             message.error('Error al editar el producto');

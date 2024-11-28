@@ -7,12 +7,12 @@ import moment from 'moment';
 const { Sider, Content } = Layout;
 
 interface DataType {
-    key: React.Key;
-    fecha: string;
-    estado: string;
-    montoIni: number;
-    montoFin: number;
-    id: number; // ID de la caja
+  key: React.Key;
+  fecha: string;
+  estado: string;
+  montoIni: number;
+  montoFin: number;
+  id: number; // ID de la caja
 }
 
 const CajaTemp: React.FC = () => {
@@ -21,7 +21,8 @@ const CajaTemp: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [montoInicial, setMontoInicial] = useState<number>(0);
   const [nombreCaja, setNombreCaja] = useState<string>(''); // Estado para el nombre de la caja
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
   // Cargar cajas al montar el componente
   useEffect(() => {
     const fetchCajas = async () => {
@@ -39,7 +40,7 @@ const CajaTemp: React.FC = () => {
   }, []);
 
 
-   const loadDataCaja = async() => {
+  const loadDataCaja = async () => {
     const data = await listarCajas();
     console.log("data", data)
     const formattedData = data.map((caja: any) => ({
@@ -49,7 +50,7 @@ const CajaTemp: React.FC = () => {
       estado: caja.estado_caja ? 'Abierta' : 'Cerrada',
       montoIni: parseFloat(caja.monto_inicial_caja),
       montoFin: caja.total_saldo_caja ? parseFloat(caja.total_saldo_caja) : 0,
-      id: caja.id, 
+      id: caja.id,
       total_ventas: caja.total_ventas
     }));
     setCajas(formattedData);
@@ -78,46 +79,67 @@ const CajaTemp: React.FC = () => {
     }
   };
 
-  // Manejar el cierre de una caja
   const handleCerrarCaja = async (id: number) => {
     try {
       await cerrarCaja(id);
       message.success('Caja cerrada exitosamente.');
       loadDataCaja();
     } catch (error) {
-      message.error('Error al cerrar la caja.');
+      message.error('Hay ventas impagas pertenecientes a la caja seleccionada.');
     }
+  };
+
+  const showConfirm = (id: number) => {
+    Modal.confirm({
+      title: '¿Está seguro que desea cerrar esta caja?',
+      content: 'Una vez cerrada la caja, no podrá realizar más operaciones en ella.',
+      okText: 'Sí, cerrar',
+      cancelText: 'Cancelar',
+      onOk() {
+        // Si el usuario confirma, llamamos a handleCerrarCaja
+        handleCerrarCaja(id);
+      },
+      onCancel() {
+        // Si el usuario cancela, no hacemos nada
+        console.log('Cancelado');
+      },
+    });
   };
 
   const columns = [
     { title: 'Fecha', dataIndex: 'fecha', sorter: (a: any, b: any) => moment(a.fecha, 'DD/MM/YYYY').unix() - moment(b.fecha, 'DD/MM/YYYY').unix() },
-    { title: 'Nombre Caja', dataIndex: 'nombre'},
+    { title: 'Nombre Caja', dataIndex: 'nombre' },
     { title: 'Estado Caja', dataIndex: 'estado' },
-    { 
-      title: 'Monto Inicial', 
-      dataIndex: 'montoIni', 
-      render: (monto: number) => monto ? `$${monto.toFixed(2)}` : 'N/A'  // Formato en pesos
+    {
+      title: 'Monto Inicial',
+      dataIndex: 'montoIni',
+      render: (monto: number) => monto ? `$${monto.toFixed(2)}` : '0'  // Formato en pesos
     },
-    { 
-      title: 'Monto Final', 
-      dataIndex: 'montoFin', 
-      render: (monto: number) => monto ? `$${monto.toFixed(2)}` : 'N/A'  // Formato en pesos
+    {
+      title: 'Monto Final',
+      dataIndex: 'montoFin',
+      render: (monto: number) => monto ? `$${monto.toFixed(2)}` : '0'  // Formato en pesos
     },
-    { title: 'Monto Ventas', dataIndex: 'total_ventas', render: (text: number) => text ? `$${text.toFixed(2)}` : '0' }, 
+    { title: 'Monto Ventas', dataIndex: 'total_ventas', render: (text: number) => text ? `$${text.toFixed(2)}` : '0' },
+    {
+      title: 'Estado Caja',
+      dataIndex: 'estado',
+      render: (estado: boolean) => estado ? 'Cerrada' : 'Abierta'
+    },
     {
       title: 'Opciones',
       key: 'opciones',
       render: (_: any, record: any) => (
         <span>
           {record.estado === 'Abierta' && (
-           <Tooltip title="Cerrar Caja">
-           <Button
-             icon={<LockOutlined />}
-             type="link"
-             onClick={() => handleCerrarCaja(record.id)}
-             style={{ color: 'red' }}
-           > Cerrar caja</Button>
-         </Tooltip>
+            <Tooltip title="Cerrar Caja">
+              <Button
+                icon={<LockOutlined />}
+                type="link"
+                onClick={() => showConfirm(record.id)}
+                style={{ color: 'red' }}
+              > Cerrar caja</Button>
+            </Tooltip>
           )}
         </span>
       ),
@@ -154,10 +176,14 @@ const CajaTemp: React.FC = () => {
               dataSource={cajas}
               rowKey="key"
               pagination={{
-                pageSize: 5,
-                pageSizeOptions: ['5', '10', '20'],
-                defaultCurrent: 1,
-                position: ['bottomCenter'],
+                current: currentPage,
+                pageSize: pageSize,
+                onChange: (page, size) => {
+                    setCurrentPage(page);
+                    setPageSize(size);
+                },
+                showSizeChanger: true,
+                pageSizeOptions: ['5', '10', '20', '50'],
               }}
               loading={loading}
             />
@@ -170,6 +196,8 @@ const CajaTemp: React.FC = () => {
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         onOk={handleAbrirCaja}
+        okText="Abrir caja"  
+        cancelText="Cancelar"
       >
         <div>
           <label>Monto Inicial</label>

@@ -78,3 +78,14 @@ class CajaAbiertaView(APIView):
         serializer = CajaSerializer(cajas_abiertas, many=True)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class ExistCajaAbiertaView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # Verificamos si existe al menos una caja con estado_caja = True
+        caja_abierta = Caja.objects.filter(estado_caja=True).exists()
+        
+        # Retornamos True si existe, de lo contrario False
+        return Response(caja_abierta) 

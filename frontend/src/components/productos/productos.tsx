@@ -150,7 +150,12 @@ const Productos: React.FC = () => {
                             pagination={{
                                 current: currentPage,
                                 pageSize: pageSize,
-                                onChange: setCurrentPage,
+                                onChange: (page, size) => {
+                                    setCurrentPage(page);
+                                    setPageSize(size);
+                                },
+                                showSizeChanger: true,
+                                pageSizeOptions: ['5', '10', '20', '50'],
                             }}
                         />
 

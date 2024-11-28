@@ -103,3 +103,20 @@ export const abrirCaja = async (montoInicial: number, nombre: string) => {
       throw error;
     }
   };
+
+  export const existenCajasAbiertas = async () => {
+    try {
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get(`${BASE_URL}exist-caja-abierta`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const data = response.data
+        return data;
+    } catch (error) {
+        console.error("Error al obtener las ventas:", error);
+        throw error;
+    }
+};

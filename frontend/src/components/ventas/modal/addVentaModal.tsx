@@ -132,7 +132,6 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
 
         try {
             await crearVenta(ventaData);
-            message.success("Venta creada con éxito");
             onSave(fecha, productos, turno, montoTotal, facturacion, pago, estadoPedido, nombreCliente, selectedCajaId);
             onCancel();  // Cierra el modal
         } catch (error) {
@@ -140,7 +139,6 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
             console.error("Error al crear la venta:", error);
         }
     };
-
     return (
         <Modal
             title="Añadir Venta"
@@ -167,9 +165,13 @@ const AddVentaModal: React.FC<AddVentaModalProps> = ({ visible, onCancel, onSave
                         style={{ width: '60%' }}
                         value={selectedProductId}
                         onChange={(value) => setSelectedProductId(value as number)}
+                        showSearch
+                        filterOption={(input, option) =>
+                            (option?.label ? option.label.toString().toLowerCase() : '').includes(input.toLowerCase())
+                        }
                     >
                         {productosDisponibles.map((producto) => (
-                            <Option key={producto.id} value={producto.id}>
+                            <Option key={producto.id} value={producto.id} label={producto.nombre_prod}>
                                 {producto.nombre_prod}
                             </Option>
                         ))}

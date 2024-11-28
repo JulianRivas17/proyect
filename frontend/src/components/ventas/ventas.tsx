@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import AddVentaModal from './modal/addVentaModal';
 import EditVentaModal from './modal/EditVentaModal';
 import { obtenerVentas, eliminarVenta } from '../../services/ventas_services';
+import { existenCajasAbiertas } from '../../services/cajaService';
 
 
 const { Sider, Content } = Layout;
@@ -28,11 +29,12 @@ const Ventas: React.FC = () => {
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [ventaSeleccionada, setVentaSeleccionada] = useState<VentaData | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(5);
     const [total, setTotal] = useState(0);
     const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+    const [estadocajas, setEstadoCajas] = useState<boolean>(false);
 
-    const fetchVentas = async (page = 1, pageSize = 10) => {
+    const fetchVentas = async (page = 1, pageSize = 5) => {
         try {
             const response = await obtenerVentas(page, pageSize);
             const ventasData = response.results
@@ -62,10 +64,21 @@ const Ventas: React.FC = () => {
 
     useEffect(() => {
         fetchVentas(currentPage, pageSize);
+        fetchData()
     }, []);
 
+    const fetchData = async () => {
+        try {
+            const estado: boolean = await existenCajasAbiertas();
+            setEstadoCajas(estado);
+        } catch (error) {
+            console.error("Error al obtener el estado de cajas abiertas:", error);
+        }
+    };
+    
+
     const handlePageChange = (page: number, pageSize?: number) => {
-        fetchVentas(page, pageSize || 10);
+        fetchVentas(page, pageSize || 5);
     };
 
     const showModal = () => {
@@ -190,7 +203,7 @@ const Ventas: React.FC = () => {
                 <div className="title-screen">Ventas</div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
                     <Button className='add-button' icon={<ExportOutlined />}>Exportar Data</Button>
-                    <Button className='add-button' type="primary" icon={<PlusOutlined />} onClick={showModal}>Añadir Venta</Button>
+                    <Button  disabled={!estadocajas} className='add-button' type="primary" icon={<PlusOutlined />} onClick={showModal}>Añadir Venta</Button>
                 </div>
             </div>
 

@@ -30,7 +30,8 @@ const AddProductoModal: React.FC<AddProductoModalProps> = ({ visible, onClose, o
 
         onSubmit(formData);
         form.resetFields();
-        setImageFileList([]);
+        setImageFileList([]); 
+        onClose();
     };
 
     const handleImageChange = ({ fileList }: any) => {
@@ -59,6 +60,17 @@ const AddProductoModal: React.FC<AddProductoModalProps> = ({ visible, onClose, o
                 <Form.Item
                     name="precio_prod"
                     label="Precio del Producto*"
+                    rules={[
+                        {
+                          required: true,
+                          message: 'El precio del producto es obligatorio',
+                        },
+                        {
+                          type: 'number',
+                          min: 0,
+                          message: 'El precio debe ser un número positivo',
+                        },
+                      ]}
                 >
                     <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
                 </Form.Item>

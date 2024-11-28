@@ -141,7 +141,6 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
 
         try {
             await editarVenta(ventaId, ventaData);
-            message.success("Venta editada con éxito");
             closeModal();
         } catch (error) {
             message.error("Error al editar la venta");
@@ -170,14 +169,18 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             <div style={{ marginTop: '1rem' }}>
                 <label>Productos*</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                    <Select
+                <Select
                         placeholder="Elige un producto"
                         style={{ width: '60%' }}
                         value={selectedProductId}
                         onChange={(value) => setSelectedProductId(value as number)}
+                        showSearch
+                        filterOption={(input, option) =>
+                            (option?.label ? option.label.toString().toLowerCase() : '').includes(input.toLowerCase())
+                        }
                     >
                         {productosDisponibles.map((producto) => (
-                            <Option key={producto.id} value={producto.id}>
+                            <Option key={producto.id} value={producto.id} label={producto.nombre_prod}>
                                 {producto.nombre_prod}
                             </Option>
                         ))}
