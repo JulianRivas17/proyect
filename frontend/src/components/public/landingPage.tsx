@@ -38,7 +38,8 @@ const LandingPage: React.FC = () => {
   /* Productos */
   const fetchProductos = async () => {
     try {
-      const productos = await obtenerProductos();
+      const filtros = {}
+      const productos = await obtenerProductos(filtros);
       setProdutos(productos);
     } catch (error) {
       message.error("Error al cargar los productos");

@@ -24,28 +24,44 @@ export interface Caja {
 }
 
 // Función para obtener la lista de cajas
-export const listarCajas = async (): Promise<CajaData[]> => {
-    try {
-        // Obtén el token del localStorage
-        const token = localStorage.getItem('token');
-        if (!token) {
-            throw new Error('No se encontró un token de autenticación.');
-        }
+export const listarCajas = async (filtros: { estado?: string, nombre?: string, sortField?: string, sortOrder?: string }): Promise<CajaData[]> => {
+  try {
+      const params: any = {};
 
-        // Realiza la solicitud al endpoint
-        const response = await axios.get(`${BASE_URL}listar-caja/`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+      if (filtros.estado) {
+          params.estado = filtros.estado;
+      }
 
-        // Devuelve los datos obtenidos
-        return response.data;
-    } catch (error) {
-        console.error('Error al listar las cajas:', error);
-        throw error;
-    }
+      if (filtros.nombre) {
+          params.nombre = filtros.nombre;
+      }
+
+      if (filtros.sortField) {
+          params.sortField = filtros.sortField;
+          params.sortOrder = filtros.sortOrder;  // Incluimos el orden de la columna
+      }
+
+      // Obtén el token del localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+          throw new Error('No se encontró un token de autenticación.');
+      }
+
+      // Realiza la solicitud al endpoint
+      const response = await axios.get(`${BASE_URL}listar-caja/`, {
+          params,
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      return response.data;
+  } catch (error) {
+      console.error("Error al listar las cajas:", error);
+      throw error;
+  }
 };
+
 
 
 export const abrirCaja = async (montoInicial: number, nombre: string) => {

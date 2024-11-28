@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Button, Table, Breadcrumb, message, Modal } from 'antd';
+import { Layout, Card, Button, Table, Breadcrumb, message, Modal, Input, Select } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, MenuOutlined, ExportOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { obtenerProductos, ProductoDisponible } from '../../services/ventas_services';
@@ -7,8 +7,8 @@ import { agregarProducto, editarProducto, eliminarProducto, obtenerURLImagen } f
 import ProductoModal from './modal/add-productos-model';
 import EditProductoModal from './modal/edit-productos-model';
 
-
 const { Sider, Content } = Layout;
+const { Option } = Select;
 
 const Productos: React.FC = () => {
     const [data, setData] = useState<ProductoDisponible[]>([]);
@@ -18,21 +18,33 @@ const Productos: React.FC = () => {
     const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+    const [nombreFilter, setNombreFilter] = useState('');
+    const [categoriaFilter, setCategoriaFilter] = useState<string | undefined>(undefined);
+    const [sortField, setSortField] = useState<string | undefined>('');  // Estado para el campo de ordenación
+    const [sortOrder, setSortOrder] = useState<string | undefined>('');
 
     const fetchProductos = async () => {
         try {
-            const productos = await obtenerProductos();
-            setData(productos);
+          const filtros: any = { 
+            nombre: nombreFilter.trim(), 
+            categoria: categoriaFilter 
+          };
+    
+          if (sortField && sortOrder) {
+            filtros.sortField = sortField;
+            filtros.sortOrder = sortOrder === 'ascend' ? 'asc' : 'desc';  
+          }
+          
+          const productos = await obtenerProductos(filtros);
+          setData(productos);
         } catch (error) {
-            message.error('Error al cargar los productos');
+          message.error('Error al cargar los productos');
         }
-    };
-
-
+      };
 
     useEffect(() => {
         fetchProductos();
-    }, []);
+    }, [nombreFilter, categoriaFilter, sortField, sortOrder]);
 
     const handleEditClick = (id: number) => {
         setSelectedProductId(id);
@@ -76,11 +88,53 @@ const Productos: React.FC = () => {
         });
     };
 
+    const handleClearFilters = () => {
+        setNombreFilter('');
+        setCategoriaFilter(undefined);
+    };
+
+    const handleSort = (sorter: { field: string; order: string }) => {
+        setSortField(sorter.field);  // Almacenar el campo de ordenación
+        setSortOrder(sorter.order);  // Almacenar la dirección de ordenación
+      };
+
     const columns = [
-        { title: 'Nombre', dataIndex: 'nombre_prod', key: 'nombre_prod' },
-        { title: 'Precio', dataIndex: 'precio_prod', key: 'precio_prod' },
-        { title: 'Categoria', dataIndex: 'category', key: 'category' },
-        { title: 'Descripción', dataIndex: 'description', key: 'description' },
+        {
+            title: 'Nombre',
+            dataIndex: 'nombre_prod',
+            key: 'nombre_prod',
+            sorter: true,
+            onHeaderCell: () => ({
+              onClick: () => handleSort({ field: 'nombre_prod', order: sortOrder === 'ascend' ? 'descend' : 'ascend' }),  // Llamar a la función de ordenación
+            }),
+          },
+          {
+            title: 'Precio',
+            dataIndex: 'precio_prod',
+            key: 'precio_prod',
+            sorter: true,
+            onHeaderCell: () => ({
+              onClick: () => handleSort({ field: 'precio_prod', order: sortOrder === 'ascend' ? 'descend' : 'ascend' }),  // Llamar a la función de ordenación
+            }),
+          },
+          {
+            title: 'Categoría',
+            dataIndex: 'category',
+            key: 'category',
+            sorter: true,
+            onHeaderCell: () => ({
+              onClick: () => handleSort({ field: 'category', order: sortOrder === 'ascend' ? 'descend' : 'ascend' }),  // Llamar a la función de ordenación
+            }),
+          },
+          {
+            title: 'Descripción',
+            dataIndex: 'description',
+            key: 'description',
+            sorter: true,
+            onHeaderCell: () => ({
+              onClick: () => handleSort({ field: 'description', order: sortOrder === 'ascend' ? 'descend' : 'ascend' }),  // Llamar a la función de ordenación
+            }),
+          },
         {
             title: 'Imagen',
             dataIndex: 'image_url',
@@ -115,6 +169,13 @@ const Productos: React.FC = () => {
         },
     ];
 
+    // Filtrar los productos según el nombre y la categoría
+    const filteredData = data.filter(producto => {
+        const matchesNombre = nombreFilter.trim() ? producto.nombre_prod.toLowerCase().includes(nombreFilter.toLowerCase()) : true;
+        const matchesCategoria = categoriaFilter ? producto.category === categoriaFilter : true;
+        return matchesNombre && matchesCategoria;
+    });
+
     return (
         <div style={{ marginTop: '4rem' }}>
             <div className="container-bread-crumb" style={{ display: 'flex', alignItems: 'center', padding: '15px 0px' }}>
@@ -137,7 +198,27 @@ const Productos: React.FC = () => {
             <Layout style={{ minHeight: '65vh', overflow: 'hidden' }}>
                 <Sider width={250} className="sider">
                     <Card title="Filtros" bordered={false} className="filters-card">
-                        <Button type="primary" className="clear-filters-button">Limpiar filtros</Button>
+                        <div style={{ marginBottom: '16px' }}>
+                            <Input
+                                placeholder="Buscar por nombre"
+                                value={nombreFilter}
+                                onChange={e => setNombreFilter(e.target.value)}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '16px' }}>
+                            <Select
+                                placeholder="Seleccionar categoría"
+                                value={categoriaFilter}
+                                onChange={value => setCategoriaFilter(value)}
+                                style={{ width: '100%' }}
+                            >
+                                <Option value="ESPECIALIDADES">Especialidades</Option>
+                                <Option value="BEBIDAS">Bebidas</Option>
+                                <Option value="PRINCIPALES">Principales</Option>
+                                <Option value="POSTRES">Postres</Option>
+                            </Select>
+                        </div>
+                        <Button type="primary" className="clear-filters-button" onClick={handleClearFilters}>Limpiar filtros</Button>
                     </Card>
                 </Sider>
 
@@ -145,7 +226,7 @@ const Productos: React.FC = () => {
                     <Content style={{ padding: '0px 20px', marginTop: '-20px' }}>
                         <Table
                             columns={columns}
-                            dataSource={data}
+                            dataSource={filteredData}
                             rowKey="id"
                             pagination={{
                                 current: currentPage,
@@ -158,7 +239,6 @@ const Productos: React.FC = () => {
                                 pageSizeOptions: ['5', '10', '20', '50'],
                             }}
                         />
-
                     </Content>
                 </Layout>
             </Layout>
@@ -172,10 +252,9 @@ const Productos: React.FC = () => {
             <EditProductoModal
                 visible={isEditModalVisible}
                 onClose={() => setIsEditModalVisible(false)}
-                onSubmit={handleEditProducto} // Función para enviar los datos editados
+                onSubmit={handleEditProducto}
                 productId={selectedProductId}
-            />;
-
+            />
         </div>
     );
 };

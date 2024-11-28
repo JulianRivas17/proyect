@@ -4,13 +4,35 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from api.usuarios.serializers import UserSerializer
 from rest_framework import status
+from django.db.models import Q
 
 class UserListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        users = User.objects.all()
+        # Obtener parámetros opcionales de la solicitud
+        email = request.query_params.get('email', None)
+        sort_field = request.query_params.get('sortField', None)
+        sort_order = request.query_params.get('sortOrder', None)
+        
+        # Filtros
+        filtros = Q()
+
+        if email:
+            filtros &= Q(email__icontains=email)
+        
+        # Obtener los usuarios con los filtros
+        users = User.objects.filter(filtros)
+        
+        # Aplicar el orden si se recibe
+        if sort_field and sort_order:
+            sort_order = '' if sort_order == 'asc' else '-' 
+            users = users.order_by(f"{sort_order}{sort_field}")
+        
+        # Serializar los usuarios
         serializer = UserSerializer(users, many=True)
+        
+        # Retornar los datos
         return Response(serializer.data)
     
 class CreateUserView(APIView):

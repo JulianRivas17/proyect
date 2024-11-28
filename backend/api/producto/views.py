@@ -6,13 +6,37 @@ from api.models import Producto, VentaProducto
 from .serializers import ProductoSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny
+from django.db.models import Q
 
 class ProductoListView(APIView):
     permission_classes = [AllowAny]
+    
     def get(self, request):
-        productos = Producto.objects.all()
+        nombre = request.query_params.get('nombre', None)
+        categoria = request.query_params.get('categoria', None)
+        sort_field = request.query_params.get('sortField', None)
+        sort_order = request.query_params.get('sortOrder', None)
+        
+        filtros = Q()
+
+        if nombre:
+            filtros &= Q(nombre_prod__icontains=nombre)
+        if categoria:
+            filtros &= Q(category__icontains=categoria) 
+        
+        productos = Producto.objects.filter(filtros)
+        
+        # Aplicar el orden si se recibe
+        if sort_field and sort_order:
+            sort_order = '' if sort_order == 'asc' else '-' 
+            productos = productos.order_by(f"{sort_order}{sort_field}")
+        
+        # Serializar los productos
         serializer = ProductoSerializer(productos, many=True)
+        
+        # Retornar los datos
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class ProductoDetailView(APIView):

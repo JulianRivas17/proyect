@@ -66,17 +66,28 @@ export interface ProductoDisponible {
     description: string;
 }
 
-export const obtenerProductos = async (): Promise<ProductoDisponible[]> => {
+export const obtenerProductos = async (filtros: { categoria?: string, nombre?: string, sortField?: string, sortOrder?: string }): Promise<ProductoDisponible[]> => {
     try {
-       /*  const token = localStorage.getItem('token'); */ 
+        const params: any = {};
+
+        if (filtros.categoria) {
+            params.categoria = filtros.categoria;
+        }
+
+        if (filtros.nombre) {
+            params.nombre = filtros.nombre; 
+        }
+
+        if (filtros.sortField) {
+            params.sortField = filtros.sortField;
+            params.sortOrder = filtros.sortOrder;  // Incluimos el orden de la columna
+        }
 
         const response = await axios.get(`${BASE_URL_2}productos/`, {
-    /*         headers: {
-                Authorization: `Bearer ${token}`,
-            }, */
+            params,
         });
 
-        return response.data; 
+        return response.data;
     } catch (error) {
         console.error("Error al obtener los productos:", error);
         throw error;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Button, Table, Breadcrumb, message, Modal } from 'antd';
+import { Layout, Card, Button, Table, Breadcrumb, message, Modal, Input } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, MenuOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { eliminarUsuario, listarUsuarios } from '../../services/usersService';
@@ -7,6 +7,7 @@ import NuevoEmpleadoModal from './model/add-user-model';
 import './users.css';
 import EditUserModal from './model/edit-user-model';
 import { getUserIdFromToken } from '../../services/authService';
+import { ColumnType } from 'antd/es/table';
 
 const { Sider, Content } = Layout;
 
@@ -27,17 +28,19 @@ const Users: React.FC = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-
+    const [emailFilter, setEmailFilter] = useState<string>('');  // Para filtro por email
+    const [sortField, setSortField] = useState<string>('');  // Para ordenación
+    const [sortOrder, setSortOrder] = useState<string>('');  // Para ordenación
 
     const fetchUsers = async () => {
         try {
-            const response = await listarUsuarios();
+            const response = await listarUsuarios(emailFilter, sortField, sortOrder);
             const usuariosData = response.map((user: any) => ({
                 key: user.id.toString(),
                 id: user.id,
                 dni: user.dni || '',
-                nombre: user.first_name || user.nombre || '',
-                apellido: user.last_name || user.apellido || '',
+                first_name: user.first_name || user.nombre || '',
+                last_name: user.last_name || user.apellido || '',
                 rol: user.assigned_roles && user.assigned_roles.length > 0 ? user.assigned_roles[0] : 'Sin rol',
                 email: user.email || '',
             }));
@@ -50,11 +53,16 @@ const Users: React.FC = () => {
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [emailFilter, sortField, sortOrder]);  // Dependencias para que se actualicen al cambiar los filtros
 
-    const handleTableChange = (pagination: any) => {
+    const handleTableChange = (pagination: any, filters: any, sorter: any) => {
         setCurrentPage(pagination.current);
         setPageSize(pagination.pageSize);
+        // Actualizar el campo de ordenación
+        if (sorter.field) {
+            setSortField(sorter.field);
+            setSortOrder(sorter.order === 'ascend' ? 'asc' : 'desc');
+        }
     };
 
     const handleEditUser = (userId: number) => {
@@ -91,22 +99,37 @@ const Users: React.FC = () => {
         });
     };
     
+    const handleEmailFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEmailFilter(e.target.value);  // Filtrar por email
+    };
 
-    const columns = [
-        { title: 'Nombre', dataIndex: 'nombre', key: 'nombre' },
-        { title: 'Apellido', dataIndex: 'apellido', key: 'apellido' },
+    const columns: Array<ColumnType<User>> = [
+        { 
+            title: 'Nombre', 
+            dataIndex: 'first_name', 
+            key: 'first_name', 
+            sorter: (a: any, b: any) => a.first_name.localeCompare(b.first_name), // Ordenar por nombre
+            sortDirections: ['ascend', 'descend'], // Direcciones de ordenación
+        },
+        { 
+            title: 'Apellido', 
+            dataIndex: 'last_name', 
+            key: 'last_name', 
+            sorter: (a: any, b: any) => a.last_name.localeCompare(b.last_name), // Ordenar por apellido
+            sortDirections: ['ascend', 'descend'], 
+        },
         {
             title: 'Rol',
             dataIndex: 'rol',
             key: 'rol',
-            filters: [
-                { text: 'Admin', value: 'Admin' },
-                { text: 'Usuario', value: 'Usuario' },
-                { text: 'Editor', value: 'Editor' },
-            ],
-            onFilter: (value: any, record: any) => record.rol.includes(value),
         },
-        { title: 'Email', dataIndex: 'email', key: 'email' },
+        { 
+            title: 'Email', 
+            dataIndex: 'email', 
+            key: 'email',
+            sorter: (a: any, b: any) => a.email.localeCompare(b.email), // Ordenar por email
+            sortDirections: ['ascend', 'descend'], // Direcciones de ordenación
+        },
         {
             title: 'Opciones',
             key: 'opciones',
@@ -147,7 +170,12 @@ const Users: React.FC = () => {
             <Layout style={{ minHeight: '100vh', overflow: 'hidden' }}>
                 <Sider width={250} className="sider">
                     <Card title="Filtros" bordered={false} className="filters-card">
-                        <Button type="primary" className="clear-filters-button">
+                        <Input
+                            placeholder="Filtrar por email"
+                            value={emailFilter}
+                            onChange={handleEmailFilterChange}
+                        />
+                        <Button style={{marginTop: "15px" }} type="primary" className="clear-filters-button" onClick={() => setEmailFilter('')}>
                             Limpiar filtros
                         </Button>
                     </Card>
@@ -199,4 +227,3 @@ const Users: React.FC = () => {
 };
 
 export default Users;
-

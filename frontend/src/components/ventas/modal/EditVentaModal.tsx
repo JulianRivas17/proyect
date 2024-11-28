@@ -90,7 +90,8 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
 
     const cargarProductos = async () => {
         try {
-            const productos = await obtenerProductos();
+            const filtros = {}
+            const productos = await obtenerProductos(filtros);
             setProductosDisponibles(productos);
         } catch (error) {
             console.error("Error al obtener los productos:", error);

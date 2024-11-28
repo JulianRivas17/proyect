@@ -2,17 +2,24 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8000'; // Cambia esto por tu URL base
 
-export const listarUsuarios = async () => {
+export const listarUsuarios = async (email: string = '', sortField: string = '', sortOrder: string = '') => {
     const token = localStorage.getItem('token');
-    if (!token) {
-        throw new Error('Token no encontrado');
+    const headers = { Authorization: `Bearer ${token}` };
+
+    try {
+        const response = await axios.get(`${BASE_URL}/usuarios/listar-usuarios/`, {
+            headers,
+            params: {
+                email,
+                sortField,
+                sortOrder
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        throw error;
     }
-    const response = await axios.get(`${BASE_URL}/usuarios/listar-usuarios/`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.data;
 };
 
 export const obtenerRoles = async (): Promise<any[]> => {

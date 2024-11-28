@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Button, Table, Breadcrumb, Card, Modal, Input, message, Tooltip } from 'antd';
+import { Layout, Button, Table, Breadcrumb, Card, Modal, Input, message, Tooltip, Select } from 'antd';
 import { PlusCircleOutlined, MenuOutlined, LockOutlined } from '@ant-design/icons';
 import { listarCajas, abrirCaja, cerrarCaja } from '../../services/cajaService'; // Asegúrate de importar el servicio correctamente
 import moment from 'moment';
+import { ColumnType } from 'antd/es/table';
 
 const { Sider, Content } = Layout;
-
-interface DataType {
+const { Option } = Select;
+interface Caja {
   key: React.Key;
   fecha: string;
   estado: string;
@@ -16,13 +17,18 @@ interface DataType {
 }
 
 const CajaTemp: React.FC = () => {
-  const [cajas, setCajas] = useState<DataType[]>([]);
+  const [cajas, setCajas] = useState<Caja[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [montoInicial, setMontoInicial] = useState<number>(0);
   const [nombreCaja, setNombreCaja] = useState<string>(''); // Estado para el nombre de la caja
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [estadoFiltro, setEstadoFiltro] = useState<string>(''); // Filtro para estado de caja
+  const [sortField, setSortField] = useState<string>(''); // Filtro de ordenación
+  const [sortOrder, setSortOrder] = useState<string>('  '); // Orden de la columna
+  const [filterCaja, setFilterCaja] = useState<string>('');
+  const [filterEstado, setFilterEstado] = useState<string>('');
   // Cargar cajas al montar el componente
   useEffect(() => {
     const fetchCajas = async () => {
@@ -37,11 +43,17 @@ const CajaTemp: React.FC = () => {
     };
 
     fetchCajas();
-  }, []);
+  }, [estadoFiltro, sortField, sortOrder,filterCaja, filterEstado ]);
 
 
   const loadDataCaja = async () => {
-    const data = await listarCajas();
+    const filtros = {
+      sortField: sortField,
+      sortOrder: sortOrder,
+      nombre: filterCaja,
+      estado: filterEstado
+    };
+    const data = await listarCajas(filtros);
     console.log("data", data)
     const formattedData = data.map((caja: any) => ({
       key: caja.id,
@@ -106,25 +118,62 @@ const CajaTemp: React.FC = () => {
     });
   };
 
-  const columns = [
-    { title: 'Fecha', dataIndex: 'fecha', sorter: (a: any, b: any) => moment(a.fecha, 'DD/MM/YYYY').unix() - moment(b.fecha, 'DD/MM/YYYY').unix() },
-    { title: 'Nombre Caja', dataIndex: 'nombre' },
-    { title: 'Estado Caja', dataIndex: 'estado' },
+  const handleTableChange = (field: string) => {
+    const newSortOrder = sortOrder === 'ascend' ? 'descend' : 'ascend';
+    console.log('Nuevo sortOrder:', newSortOrder);
+    
+    setSortField(field);
+    setSortOrder(newSortOrder);
+  };
+  const columns: Array<ColumnType<Caja>> = [
+    {
+      title: 'Fecha',
+      dataIndex: 'fecha',
+      sorter: true,
+      onHeaderCell: () => ({
+        onClick: () => handleTableChange('fecha_hs_aper_caja'),
+      }),
+    },
+    {
+      title: 'Nombre Caja',
+      dataIndex: 'nombre',
+      sorter: true,
+      onHeaderCell: () => ({
+        onClick: () => handleTableChange('nombre'),
+      }),
+    },
+    {
+      title: 'Estado Caja',
+      dataIndex: 'estado',
+    },
     {
       title: 'Monto Inicial',
       dataIndex: 'montoIni',
-      render: (monto: number) => monto ? `$${monto.toFixed(2)}` : '0'  // Formato en pesos
+      sorter: true,
+      render: (monto: number) => monto.toFixed(2),
+      onHeaderCell: () => ({
+        onClick: () => handleTableChange('monto_inicial_caja'),
+      }),
     },
     {
       title: 'Monto Final',
       dataIndex: 'montoFin',
-      render: (monto: number) => monto ? `$${monto.toFixed(2)}` : '0'  // Formato en pesos
+      sorter: true,
+      render: (monto: number) => monto.toFixed(2),
+      onHeaderCell: () => ({
+        onClick: () => handleTableChange('total_saldo_caja'),
+      }),
     },
-    { title: 'Monto Ventas', dataIndex: 'total_ventas', render: (text: number) => text ? `$${text.toFixed(2)}` : '0' },
     {
-      title: 'Estado Caja',
-      dataIndex: 'estado',
-      render: (estado: boolean) => estado ? 'Cerrada' : 'Abierta'
+      title: 'Total ventas',
+      dataIndex: 'total_ventas',
+      sorter: true,
+      render: (monto: number) => {
+        return monto != null ? monto.toFixed(2) : '0.00'; 
+      },
+      onHeaderCell: () => ({
+        onClick: () => handleTableChange('total_ventas'),
+      }),
     },
     {
       title: 'Opciones',
@@ -146,6 +195,7 @@ const CajaTemp: React.FC = () => {
     },
   ];
 
+
   return (
     <div style={{ marginTop: '4rem' }}>
       <div className="container-bread-crumb" style={{ display: 'flex', alignItems: 'center', padding: '15px 0px' }}>
@@ -165,13 +215,33 @@ const CajaTemp: React.FC = () => {
       <Layout style={{ minHeight: '65vh', overflow: 'hidden' }}>
         <Sider width={250} className="sider">
           <Card title="Filtros" bordered={false} className="filters-card">
-            <Button type="primary" className="clear-filters-button">Limpiar filtros</Button>
+              <Select 
+                placeholder="Selecciona un estado"
+                value={filterEstado}
+                onChange={setFilterEstado}
+                style={{ width: '100%' }}
+                allowClear
+              >
+                <Option value="">Todos</Option>
+                <Option value="true">Abierta</Option>
+                <Option value="Cerrada">Cerrada</Option>
+              </Select>
+
+            <div style={{marginTop: "15px" }}>
+              <Input
+                value={filterCaja}
+                onChange={(e) => setFilterCaja(e.target.value)}
+                placeholder="Nombre de la caja"
+                allowClear
+              />
+            </div> 
+            <Button style={{marginTop: "15px" }} type="primary" className="clear-filters-button">Limpiar filtros</Button>
           </Card>
         </Sider>
 
         <Layout className="layout-content">
           <Content style={{ padding: '0px 20px', marginTop: '-20px' }}>
-            <Table<DataType>
+            <Table
               columns={columns}
               dataSource={cajas}
               rowKey="key"
