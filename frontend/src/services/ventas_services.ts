@@ -61,7 +61,7 @@ export interface ProductoDisponible {
     id: number;
     nombre_prod: string;
     precio_prod: number;
-    image_url: string; 
+    image_url: string;
     category: string;
     description: string;
 }
@@ -75,7 +75,7 @@ export const obtenerProductos = async (filtros: { categoria?: string, nombre?: s
         }
 
         if (filtros.nombre) {
-            params.nombre = filtros.nombre; 
+            params.nombre = filtros.nombre;
         }
 
         if (filtros.sortField) {
@@ -102,18 +102,55 @@ interface VentaResponse {
     estado_pedido: string;
     pago: string;
     facturacion: string;
-    productos: { producto: string; cantidad: number, nombre_producto: string, precio_prod: number;  }[];
+    productos: { producto: string; cantidad: number, nombre_producto: string, precio_prod: number; }[];
 }
 
-export const obtenerVentas = async (page: number, pageSize: number): Promise<{ results: VentaResponse[]; count: number }> => {
+export const obtenerVentas = async (
+    page: number,
+    pageSize: number,
+    filtros: { 
+        sortField?: string, 
+        sortOrder?: string,
+        fecha?: { start: string, end: string }, 
+        turnoFilter?: string,
+        cajaFilter?: string,
+        estadoFilter?: string 
+    } = {}  // Establece un valor por defecto vacío para filtros
+): Promise<{ results: VentaResponse[]; count: number }> => {
+    console.log(filtros, "los filtros");
     try {
-        const token = localStorage.getItem('token'); // Obtén el token del localStorage
+        const params: any = {
+            page,
+            page_size: pageSize,
+        };
+
+        // Agrega los parámetros de ordenación solo si existen en 'filtros'
+        if (filtros.sortField && filtros.sortOrder) {
+            params.sortField = filtros.sortField;
+            params.sortOrder = filtros.sortOrder;
+        }
+
+        // Filtra por fecha si se proporciona
+        if (filtros.fecha && filtros.fecha.start && filtros.fecha.end) {
+            params.fecha_inicio = filtros.fecha.start;
+            params.fecha_fin = filtros.fecha.end;
+        }
+
+        // Agrega filtros adicionales
+        if (filtros.turnoFilter) {
+            params.turno = filtros.turnoFilter;
+        }
+        if (filtros.cajaFilter) {
+            params.caja_id = filtros.cajaFilter;
+        }
+        if (filtros.estadoFilter) {
+            params.estado_pedido = filtros.estadoFilter;
+        }
+
+        const token = localStorage.getItem('token');
 
         const response = await axios.get(`${BASE_URL_2}ventas/listar-ventas/`, {
-            params: {
-                page: page,
-                page_size: pageSize,
-            },
+            params,
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -129,10 +166,10 @@ export const obtenerVentas = async (page: number, pageSize: number): Promise<{ r
 
 export const eliminarVenta = async (id: number) => {
     try {
-        const token = localStorage.getItem('token'); 
+        const token = localStorage.getItem('token');
         const response = await axios.delete(`${BASE_URL_2}ventas/${id}/eliminar/`, {
             headers: {
-                Authorization: `Bearer ${token}`, 
+                Authorization: `Bearer ${token}`,
             },
         });
         return response.data;

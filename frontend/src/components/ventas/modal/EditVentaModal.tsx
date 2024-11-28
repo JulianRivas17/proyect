@@ -40,7 +40,6 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
     const [nombreCliente, setNombreCliente] = useState<string>("");
     const [cajasDisponibles, setCajasDisponibles] = useState<Caja[]>([]); // Estado para las cajas disponibles
     const [selectedCajaId, setSelectedCajaId] = useState<number | null>(null);
-
     useEffect(() => {
         cargarVenta(ventaId);
         cargarProductos();
@@ -244,7 +243,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     onChange={(value) => setEstadoPedido(value)}
                 >
                     <Option value="ENESPERA">En espera</Option>
-                    <Option value="PROCESO">En progreso</Option>
+                    <Option value="ENPROCESO">En progreso</Option>
                     <Option value="ENTREGADO">Entregado</Option>
                 </Select>
             </div>

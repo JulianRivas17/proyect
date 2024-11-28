@@ -24,7 +24,6 @@ const CajaTemp: React.FC = () => {
   const [nombreCaja, setNombreCaja] = useState<string>(''); // Estado para el nombre de la caja
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [estadoFiltro, setEstadoFiltro] = useState<string>(''); // Filtro para estado de caja
   const [sortField, setSortField] = useState<string>(''); // Filtro de ordenación
   const [sortOrder, setSortOrder] = useState<string>('  '); // Orden de la columna
   const [filterCaja, setFilterCaja] = useState<string>('');
@@ -43,7 +42,7 @@ const CajaTemp: React.FC = () => {
     };
 
     fetchCajas();
-  }, [estadoFiltro, sortField, sortOrder,filterCaja, filterEstado ]);
+  }, [sortField, sortOrder,filterCaja, filterEstado ]);
 
 
   const loadDataCaja = async () => {
@@ -125,6 +124,7 @@ const CajaTemp: React.FC = () => {
     setSortField(field);
     setSortOrder(newSortOrder);
   };
+  
   const columns: Array<ColumnType<Caja>> = [
     {
       title: 'Fecha',
