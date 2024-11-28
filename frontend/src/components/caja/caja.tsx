@@ -215,6 +215,7 @@ const CajaTemp: React.FC = () => {
       <Layout style={{ minHeight: '65vh', overflow: 'hidden' }}>
         <Sider width={250} className="sider">
           <Card title="Filtros" bordered={false} className="filters-card">
+          <span style={{fontSize: '13px', fontWeight: '500'}}>Estado de Caja</span>
               <Select 
                 placeholder="Selecciona un estado"
                 value={filterEstado}
@@ -228,10 +229,11 @@ const CajaTemp: React.FC = () => {
               </Select>
 
             <div style={{marginTop: "15px" }}>
+            <span style={{fontSize: '13px', fontWeight: '500'}}>Nombre de caja</span>
               <Input
                 value={filterCaja}
                 onChange={(e) => setFilterCaja(e.target.value)}
-                placeholder="Nombre de la caja"
+                placeholder="Ingresa el nombre"
                 allowClear
               />
             </div> 

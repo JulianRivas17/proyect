@@ -170,8 +170,9 @@ const Users: React.FC = () => {
             <Layout style={{ minHeight: '65vh', overflow: 'hidden' }}>
                 <Sider width={250} className="sider">
                     <Card title="Filtros" bordered={false} className="filters-card">
+                    <span style={{fontSize: '13px', fontWeight: '500'}}>Email de usuario</span>
                         <Input
-                            placeholder="Filtrar por email"
+                            placeholder="Ingresar el email"
                             value={emailFilter}
                             onChange={handleEmailFilterChange}
                         />

@@ -198,14 +198,16 @@ const Productos: React.FC = () => {
             <Layout style={{ minHeight: '65vh', overflow: 'hidden' }}>
                 <Sider width={250} className="sider">
                     <Card title="Filtros" bordered={false} className="filters-card">
-                        <div style={{ marginBottom: '16px' }}>
+                        <div style={{ marginBottom: '15px' }}>
+                        <span style={{fontSize: '13px', fontWeight: '500'}}>Nombre de Producto</span>
                             <Input
-                                placeholder="Buscar por nombre"
+                                placeholder="Ingresar nombre producto"
                                 value={nombreFilter}
                                 onChange={e => setNombreFilter(e.target.value)}
                             />
                         </div>
-                        <div style={{ marginBottom: '16px' }}>
+                        <div style={{ marginBottom: '15px' }}>
+                        <span style={{fontSize: '13px', fontWeight: '500'}}>Categoría</span>
                             <Select
                                 placeholder="Seleccionar categoría"
                                 value={categoriaFilter}

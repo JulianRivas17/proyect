@@ -287,6 +287,7 @@ const Ventas: React.FC = () => {
                     <Card title="Filtros" bordered={false} className="filters-card">
                         <DatePicker.RangePicker onChange={handleDateChange} key={key} />
                         <div style={{ marginTop: "15px" }}>
+                            <span style={{fontSize: '13px', fontWeight: '500'}}>Estado de Pedido</span>
                             <Select
                                 placeholder="Elige un estado de pedido"
                                 style={{ width: '100%' }}
@@ -300,6 +301,7 @@ const Ventas: React.FC = () => {
                             </Select>
                         </div>
                         <div style={{ marginTop: "15px" }}>
+                        <span style={{fontSize: '13px', fontWeight: '500'}}>Turno</span>
                             <Select
                                 placeholder="Elige un turno"
                                 style={{ width: '100%' }}
@@ -312,12 +314,14 @@ const Ventas: React.FC = () => {
                             </Select>
                         </div>
                         <div style={{ marginTop: "15px" }}>
+                        <span style={{fontSize: '13px', fontWeight: '500'}}>Caja</span>
                             <Select
                                 placeholder="Selecciona una caja"
                                 style={{ width: '100%' }}
                                 value={cajaFilter}
                                 onChange={(value) => setCajaFilter(value)} // Guardamos el id de la caja seleccionada
                             >
+                                <Option value="">Todos</Option>
                                 {cajasDisponibles.map((caja) => (
                                     <Option key={caja.id} value={caja.id}>
                                         {caja.nombre}
