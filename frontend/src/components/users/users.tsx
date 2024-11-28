@@ -167,7 +167,7 @@ const Users: React.FC = () => {
                 </div>
             </div>
 
-            <Layout style={{ minHeight: '100vh', overflow: 'hidden' }}>
+            <Layout style={{ minHeight: '65vh', overflow: 'hidden' }}>
                 <Sider width={250} className="sider">
                     <Card title="Filtros" bordered={false} className="filters-card">
                         <Input
