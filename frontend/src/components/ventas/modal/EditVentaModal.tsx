@@ -33,6 +33,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
     const [estadoPedido, setEstadoPedido] = useState<string>(''); // Nuevo estado
     const [pago, setPago] = useState<string>(''); // Nuevo estado
     const [facturacion, setFacturacion] = useState<string>(''); // Nuevo estado
+    const [tipoPago, setTipoPago] = useState<string>(''); // Nuevo estado
     const [montoTotal, setMontoTotal] = useState<number>(0);
     const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
@@ -68,6 +69,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             setEstadoPedido(venta.estado_pedido);  // Cargar el estado del pedido
             setPago(venta.pago);  // Cargar el estado de pago
             setFacturacion(venta.facturacion);  // Cargar el estado de facturación
+            setTipoPago(venta.tipoPago);  // Cargar el estado de facturación
             setNombreCliente(venta.nombre_venta)
             const productosConPrecio: Producto[] = venta.productos.map((prod: any) => {
                 return {
@@ -135,6 +137,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             estado_pedido: estadoPedido,
             pago,
             facturacion,
+            tipoPago,
             nombre_venta: nombreCliente,
             caja_id: selectedCajaId
         };
@@ -287,6 +290,19 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                             {caja.nombre}
                         </Option>
                     ))}
+                </Select>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+                <label>Tipo de Pago*</label>
+                <Select
+                    placeholder="Elige un estado"
+                    style={{ width: '100%' }}
+                    value={tipoPago}
+                    onChange={(value) => setTipoPago(value)}
+                >
+                    <Option value="Efectivo">Efectivo</Option>
+                    <Option value="Tarjeta">Tarjeta</Option>
                 </Select>
             </div>
 

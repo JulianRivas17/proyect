@@ -12,15 +12,16 @@ import Productos from '../components/productos/productos';
 import LandingPage from '../components/public/landingPage';
 import ViewProduct from '../components/public/viewProduct';
 import Cart from '../components/public/cart';
+import Pedido from '../components/public/pedido';
 
 const AppRoutes = () => {
   const location = useLocation();
 
-  const hideHeaderPaths = ['/', '/register', '/landing', '/viewProduct', '/cart'];
+  const hideHeaderPaths = ['/', '/register', '/landing', '/viewProduct', '/cart', '/pedido'];
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
 
   useEffect(() => {
-    if (location.pathname === '/landing' || location.pathname === '/viewProduct' || location.pathname === '/cart') {
+    if (location.pathname === '/landing' || location.pathname === '/viewProduct' || location.pathname === '/cart' || location.pathname === '/pedido') {
       document.body.style.backgroundColor = '#2d2c36';
     } else {
       document.body.style.backgroundColor = '';
@@ -41,6 +42,7 @@ const AppRoutes = () => {
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/viewProduct" element={<ViewProduct />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/pedido" element={<Pedido />} />
 
         {/* Rutas protegidas solo para Gerente */}
         <Route element={<ProtectedRoute requiredGroup="Gerente" />}>

@@ -12,6 +12,8 @@ class Venta(models.Model):
     facturacion = models.CharField(max_length=100, default="")
     nombre_venta = models.CharField(max_length=100, default="")
     caja_id = models.IntegerField(null=True)
+    tipoPago = models.CharField(max_length=100, default="")
+    codeOrder = models.CharField(max_length=100, default="")
     def __str__(self):
         return f"Venta {self.id} - {self.fecha}"
 

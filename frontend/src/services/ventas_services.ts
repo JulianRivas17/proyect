@@ -20,6 +20,8 @@ export interface VentaData {
     facturacion: string;
     nombreCliente: string;
     cajaId: number | null;
+    orderCode: string;
+    tipoPago: string
 }
 
 const BASE_URL_2 = 'http://localhost:8000/';
@@ -41,6 +43,7 @@ export const crearVenta = async (ventaData: VentaData) => {
             facturacion: ventaData.facturacion,
             nombre_venta: ventaData.nombreCliente,
             caja_id: ventaData.cajaId,
+            tipoPago: ventaData.tipoPago
         };
 
         // No enviar encabezados si no es necesario
@@ -103,6 +106,7 @@ interface VentaResponse {
     pago: string;
     facturacion: string;
     productos: { producto: string; cantidad: number, nombre_producto: string, precio_prod: number; }[];
+    tipoPago: string
 }
 
 export const obtenerVentas = async (

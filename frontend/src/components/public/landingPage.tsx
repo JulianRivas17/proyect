@@ -102,6 +102,9 @@ const LandingPage: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleSearchOrderClick = () => {
+    navigate('/pedido'); 
+  };
 
   return (
     <Layout className="container-principal">
@@ -150,6 +153,9 @@ const LandingPage: React.FC = () => {
           </Menu.Item>
           <Menu.Item onClick={() => scrollToSection(drinksRef)}>
             Bebidas
+          </Menu.Item>
+          <Menu.Item onClick={handleSearchOrderClick}>
+            Buscar Pedido
           </Menu.Item>
         </Menu>
       </div>

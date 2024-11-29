@@ -1,7 +1,16 @@
 import React, { useState } from "react";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
-import { Layout, Button, Input, Spin, Modal, Empty, message } from "antd";
+import {
+  Layout,
+  Button,
+  Input,
+  Spin,
+  Modal,
+  Empty,
+  message,
+  Select,
+} from "antd";
 import {
   LeftOutlined,
   DeleteOutlined,
@@ -15,27 +24,33 @@ import { crearVenta, VentaData } from "../../services/ventas_services";
 const { Footer } = Layout;
 
 const Cart: React.FC = () => {
-  const { cart, removeFromCart, updateQuantity, clearCart,setOrder } = useCart();
+  const { cart, removeFromCart, updateQuantity, clearCart, setOrder } =
+    useCart();
   const navigate = useNavigate();
 
   const [isModalVisible, setIsModalVisible] = useState(false); // Controla la visibilidad del modal
   const [selectedItem, setSelectedItem] = useState<number | null>(null); // Producto seleccionado para eliminar
   const [isLoading, setIsLoading] = useState(false); // Controla la pantalla de carga
-
   const [isOrderModalVisible, setIsOrderModalVisible] = useState(false); // Controla el modal de hacer pedido
-  const [name, setName] = useState(""); // Almacena el nombre del cliente
+  
+  const [name, setName] = useState(""); 
+  const [tipoPago, setTipoPago] = useState(""); 
+  const [orderCode, setOrderCode] = useState(""); 
+
   const [errorMessage, setErrorMessage] = useState("");
 
-const [venta, setVenta] = useState<VentaData>({
+  const [venta, setVenta] = useState<VentaData>({
     fecha: null,
     productos: [],
-    turno: '',
+    turno: "",
     montoTotal: 0,
-    estadoPedido: '',
-    pago: '',
-    facturacion: '',
-    nombreCliente: '',
-    cajaId: 0
+    estadoPedido: "",
+    pago: "",
+    facturacion: "",
+    nombreCliente: "",
+    cajaId: 0,
+    orderCode: "",
+    tipoPago: "",
   });
 
   const handleLandingPage = () => {
@@ -101,17 +116,23 @@ const [venta, setVenta] = useState<VentaData>({
       return;
     }
 
+    const randomNumber = Math.floor(Math.random() * 10000); // Número aleatorio de 4 dígitos
+    const paddedNumber = randomNumber.toString().padStart(4, "0"); // Asegura que tenga 4 dígitos
+    const orderCode = `orden-${name}${paddedNumber}`;
+
     const newOrder = {
       cliente: name,
+      orderCode: orderCode,
+      userName: name,
       productos: cart,
       total: totalCarrito,
       fecha: dayjs().toISOString(),
+      tipoPago: tipoPago,
     };
 
-    setOrder(newOrder); 
+    setOrder(newOrder);
 
     console.log("Pedido registrado:", newOrder);
-    
 
     const ventaData: VentaData = {
       fecha: dayjs(newOrder.fecha), // Fecha del pedido
@@ -121,30 +142,46 @@ const [venta, setVenta] = useState<VentaData>({
         cantidad: producto.cantidad,
         precio: producto.precioTotal,
       })), // Mapeo de productos
-      turno: 'Mañana', // Puedes ajustar según el caso
+      turno: "Mañana", // Puedes ajustar según el caso
       montoTotal: newOrder.total, // Total del carrito
-      estadoPedido: 'ENESPERA', // Estado inicial del pedido
-      pago: 'NOPAGADO', // Estado de pago
-      facturacion: 'NOFACTURADO', // Estado de facturación
+      estadoPedido: "ENESPERA", // Estado inicial del pedido
+      pago: "NOPAGADO", // Estado de pago
+      facturacion: "NOFACTURADO", // Estado de facturación
       nombreCliente: newOrder.cliente, // Nombre del cliente
       cajaId: null, // ID de la caja seleccionada
+      orderCode: newOrder.orderCode,
+      tipoPago: newOrder.tipoPago,
     };
-    
+
     try {
       crearVenta(ventaData);
-      message.success("Venta creada con éxito");
-  } catch (error) {
+      console.log("Venta creada con éxito");
+    } catch (error) {
       message.error("Error al crear la venta. Intenta nuevamente.");
       console.error("Error al crear la venta:", error);
-  }
+    }
 
+    console.log(`Pedido registrado a nombre de ${name}`);
 
+    Modal.success({
+      title: "Pedido Registrado",
+      content: `Pedido registrado a nombre de ${name}. Guarda este código para seguir tu pedido: ${orderCode}`,
+      onOk() {
+        // Copiamos el código al portapapeles cuando se haga clic en OK
+        navigator.clipboard
+          .writeText(orderCode)
+          .then(() => {
+            // Mostramos el mensaje de "Código copiado"
+            message.success("Código copiado al portapapeles.");
+          })
+          .catch((err) => {
+            // Si ocurre algún error al copiar
+            message.error("Hubo un error al copiar el código.");
+          });
+      },
+    });
 
-
-
-    message.success(`Pedido registrado a nombre de ${name}`);
-
-    clearCart(); 
+    clearCart();
 
     setIsOrderModalVisible(false);
     setName(""); // Limpia el nombre después del pedido
@@ -158,6 +195,10 @@ const [venta, setVenta] = useState<VentaData>({
     setName(""); // Limpia el campo de nombre
     setErrorMessage(""); // Limpia el mensaje de error
   };
+  
+
+const { Option } = Select;
+
 
   return (
     <Layout className="container-principal">
@@ -272,6 +313,20 @@ const [venta, setVenta] = useState<VentaData>({
               onChange={(e) => setName(e.target.value)}
               placeholder="Nombre completo"
             />
+            <div style={{ marginTop: "15px" }}>
+              <span style={{ fontSize: "13px", fontWeight: "500" }}>
+                Elegir método de Pago
+              </span>
+              <Select
+                style={{ width: "100%" }}
+                value={tipoPago}
+                onChange={(value) => setTipoPago(value)}
+              >
+                <Option value="efectivo">Efectivo</Option>
+                <Option value="tarjeta">Tarjeta</Option>
+              </Select>
+            </div>
+
             {errorMessage && (
               <p style={{ color: "red", marginTop: "8px" }}>{errorMessage}</p>
             )}
