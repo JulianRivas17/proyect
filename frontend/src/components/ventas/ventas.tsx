@@ -299,8 +299,8 @@ const Ventas: React.FC = () => {
             <div className="container-head-dash" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div className="title-screen">Ventas</div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-                    <Button className='add-button' icon={<ExportOutlined />}>Exportar Data</Button>
                     <Button disabled={!estadocajas} className='add-button' type="primary" icon={<PlusOutlined />} onClick={showModal}>Añadir Venta</Button>
+                
                 </div>
             </div>
 
@@ -360,7 +360,7 @@ const Ventas: React.FC = () => {
                     <Content style={{ padding: '0px 20px', marginTop: '-20px' }}>
                     <Spin spinning={isLoading} tip="Cargando...">
                         <Table
-                            rowSelection={rowSelection}
+                            //rowSelection={rowSelection}
                             columns={columns}
                             dataSource={data}
                             rowKey="key"

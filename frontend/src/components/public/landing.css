@@ -145,7 +145,7 @@ h3.title-Product {
 }
 
 :where(.css-dev-only-do-not-override-1hpnbz2).ant-card-bordered {
-    border: 0.5px solid #4e4e4e;
+    border: none;
 }
 
 .add-Product {

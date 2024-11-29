@@ -1,0 +1,37 @@
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-variant-solid {
+    color: #fff;
+    background: #51971A;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+:where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-variant-outlined:not(:disabled):not(.ant-btn-disabled):hover, :where(.css-dev-only-do-not-override-1hpnbz2).ant-btn-variant-dashed:not(:disabled):not(.ant-btn-disabled):hover {
+    color: #51971A;
+    border-color: #51971A;
+    background: #ffffff;
+}
+
+.add-button[disabled]::after {
+    content: "No hay cajas abiertas";
+    position: absolute;
+    bottom: 100%; /* Esto lo coloca arriba del botón */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none; /* Asegura que el tooltip no interfiera con otros eventos */
+    transition: opacity 0.3s ease;
+  }
+
+  .add-button[disabled]:hover::after {
+    opacity: 1; /* Muestra el tooltip solo al hacer hover */
+  }

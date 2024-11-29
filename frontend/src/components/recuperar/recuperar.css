@@ -18,3 +18,9 @@
     width: 100%;
   }
   
+  .button-return {
+    width: 100%;
+    background-color: rgb(223, 223, 223);
+    color: #272727;
+    box-shadow: none;
+  }

@@ -157,7 +157,8 @@ const CajaTemp: React.FC = () => {
       dataIndex: 'montoIni',
       sorter: true,
       render: (monto: number) => {
-        return monto != null ? monto.toFixed(2) : '0.00';
+        //return monto != null ? monto.toFixed(2) : '0.00';
+        return monto != null ? `$${monto.toFixed(2)}` : '$0.00';
       },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('monto_inicial_caja'),
@@ -168,7 +169,8 @@ const CajaTemp: React.FC = () => {
       dataIndex: 'montoFin',
       sorter: true,
       render: (monto: number) => {
-        return monto != null ? monto.toFixed(2) : '0.00';
+        //return monto != null ? monto.toFixed(2) : '0.00';
+        return monto != null ? `$${monto.toFixed(2)}` : '$0.00';
       },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('total_saldo_caja'),
@@ -179,7 +181,8 @@ const CajaTemp: React.FC = () => {
       dataIndex: 'total_ventas',
       sorter: true,
       render: (monto: number) => {
-        return monto != null ? monto.toFixed(2) : '0.00';
+        //return monto != null ? monto.toFixed(2) : '0.00';
+        return monto != null ? `$${monto.toFixed(2)}` : '$0.00';
       },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('total_ventas'),
@@ -190,7 +193,8 @@ const CajaTemp: React.FC = () => {
       dataIndex: 'total_ventas_efectivo',
       sorter: true,
       render: (monto: number) => {
-        return monto != null ? monto.toFixed(2) : '0.00';
+        //return monto != null ? monto.toFixed(2) : '0.00';
+        return monto != null ? `$${monto.toFixed(2)}` : '$0.00';
       },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('total_ventas_efectivo'),
@@ -201,7 +205,8 @@ const CajaTemp: React.FC = () => {
       dataIndex: 'total_ventas_tarjetas',
       sorter: true,
       render: (monto: number) => {
-        return monto != null ? monto.toFixed(2) : '0.00';
+        //return monto != null ? monto.toFixed(2) : '0.00';
+        return monto != null ? `$${monto.toFixed(2)}` : '$0.00';
       },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('total_ventas_tarjetas'),

@@ -46,10 +46,15 @@ const Recuperar = () => {
     }
   };
 
+  const handleRedirect = () => {
+    window.location.href = '/';  // Redirige a /Login
+  };
+
   return (
-    <div className="recuperar-page">
-      <div className="recuperar-container">
-        <h2>Recuperar contraseña</h2>
+    <div className="login-page">
+      <div className="login-container">
+      <h2>Recuperar contraseña</h2>
+        <p style={{marginBottom: '10px'}}>Ingresa el mail asociado a tu cuenta</p>
         {etapa === 1 && (
           <Formik
             initialValues={{ email: '' }}
@@ -65,9 +70,14 @@ const Recuperar = () => {
                     )}
                   </Field>
                 </div>
-                <Button type="primary" htmlType="submit" className="submit-button">
-                  Enviar código
-                </Button>
+                <div className="flex">
+                  <Button type="primary" className="button-return" onClick={handleRedirect}>
+                    Regresar
+                  </Button>
+                  <Button type="primary" htmlType="submit" className="submit-button">
+                    Enviar código
+                  </Button>
+                </div>
               </Form>
             )}
           </Formik>
@@ -129,9 +139,9 @@ const Recuperar = () => {
           </Formik>
         )}
       </div>
-{/*       <div className="login-image">
+      <div className="login-image">
         <img src={registerImage} alt="background" />
-      </div> */}
+      </div>
     </div>
   );
 };

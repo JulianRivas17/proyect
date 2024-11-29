@@ -4,6 +4,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { obtenerProductos, obtenerVentaPorId, editarVenta } from '../../../services/ventas_services';
 import dayjs, { Dayjs } from 'dayjs';
 import { Caja, obtenerCajasAbiertas } from '../../../services/cajaService';
+import './modal-styles.css'
 
 const { Option } = Select;
 
@@ -150,6 +151,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
         }
     };
 
+
     return (
         <Modal
             title="Editar Venta"
@@ -166,6 +168,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     value={fecha}
                     onChange={(date) => setFecha(date)}
                     style={{ width: '100%' }}
+                    disabled
                 />
             </div>
 
@@ -196,7 +199,13 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                         value={selectedQuantity}
                         onChange={(e) => setSelectedQuantity(parseInt(e.target.value))}
                     />
-                    <Button type="primary" onClick={handleAddProduct}>Añadir producto</Button>
+                    <Button 
+                        style={{borderColor: "#51971A", backgroundColor: "#51971A"}}
+                        type="primary" 
+                        onClick={handleAddProduct}
+                    >
+                        Añadir producto
+                    </Button>
                 </div>
 
                 <div style={{ marginTop: '10px' }}>
@@ -213,69 +222,94 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     ))}
                 </div>
             </div>
-            <div style={{ marginTop: '1rem' }}>
-                <label>Nombre Cliente*</label>
-                <Input
-                    type="text"
-                    placeholder="Ingresa el nombre del cliente"
-                    style={{ width: '100%' }}
-                    value={nombreCliente}
-                    onChange={(e) => setNombreCliente(e.target.value)}
-                />
-            </div>
-            <div style={{ marginTop: '1rem' }}>
-                <label>Turno*</label>
-                <Select
-                    placeholder="Elige un turno"
-                    style={{ width: '100%' }}
-                    value={turno}
-                    onChange={(value) => setTurno(value)}
-                >
-                    <Option value="Mañana">Mañana</Option>
-                    <Option value="Tarde">Tarde</Option>
-                    <Option value="Noche">Noche</Option>
-                </Select>
-            </div>
-
-            <div style={{ marginTop: '1rem' }}>
-                <label>Estado Pedido*</label>
-                <Select
-                    placeholder="Elige un estado"
-                    style={{ width: '100%' }}
-                    value={estadoPedido}
-                    onChange={(value) => setEstadoPedido(value)}
-                >
-                    <Option value="ENESPERA">En espera</Option>
-                    <Option value="ENPROCESO">En progreso</Option>
-                    <Option value="ENTREGADO">Entregado</Option>
-                    <Option value="LISTO">Listo para entrega</Option>
-                </Select>
+           
+            <div className="flex"> 
+                <div style={{ marginTop: '1rem', width: "100%" }}>
+                    <label>Nombre Cliente*</label>
+                    <Input
+                        type="text"
+                        placeholder="Ingresa el nombre del cliente"
+                        style={{ width: '100%' }}
+                        value={nombreCliente}
+                        onChange={(e) => setNombreCliente(e.target.value)}
+                    />
+                </div>
+                <div style={{ marginTop: '1rem', width: "100%" }}>
+                    <label>Turno*</label>
+                    <Select
+                        placeholder="Elige un turno"
+                        style={{ width: '100%' }}
+                        value={turno}
+                        onChange={(value) => setTurno(value)}
+                    >
+                        <Option value="Mañana">Mañana</Option>
+                        <Option value="Tarde">Tarde</Option>
+                        <Option value="Noche">Noche</Option>
+                    </Select>
+                </div>  
             </div>
 
-            <div style={{ marginTop: '1rem' }}>
-                <label>Pago*</label>
-                <Select
-                    placeholder="Elige un estado"
-                    style={{ width: '100%' }}
-                    value={pago}
-                    onChange={(value) => setPago(value)}
-                >
-                    <Option value="PAGADO">Pagado</Option>
-                    <Option value="NOPAGADO">No pagado</Option>
-                </Select>
+            <div className="flex"> 
+                <div style={{ marginTop: '1rem', width: "100%" }}>
+                    <label>Estado de Pedido*</label>
+                    <Select
+                        placeholder="Elige un estado"
+                        style={{ width: '100%' }}
+                        value={estadoPedido}
+                        onChange={(value) => setEstadoPedido(value)}
+                    >
+                        <Option value="ENESPERA">En espera</Option>
+                        <Option value="ENPROCESO">En progreso</Option>
+                        <Option value="ENTREGADO">Entregado</Option>
+                        <Option value="LISTO">Listo para entrega</Option>
+                    </Select>
+                </div>
+                <div style={{ marginTop: '1rem', width: '100%' }}>
+                    <label>Estado de Pago*</label>
+                    <Select
+                        placeholder="Elige un estado"
+                        style={{ width: '100%' }}
+                        value={pago}
+                        onChange={(value) => setPago(value)}
+                    >
+                        <Option value="PAGADO">Pagado</Option>
+                        <Option value="NOPAGADO">No pagado</Option>
+                    </Select>
+                </div>
             </div>
 
-            <div style={{ marginTop: '1rem' }}>
-                <label>Facturación*</label>
-                <Select
-                    placeholder="Elige un estado"
-                    style={{ width: '100%' }}
-                    value={facturacion}
-                    onChange={(value) => setFacturacion(value)}
-                >
-                    <Option value="NOFACTURADO">No facturado</Option>
-                    <Option value="FACTURADO">Facturado</Option>
-                </Select>
+
+            <div className="flex"> 
+                <div style={{ marginTop: '1rem', width: "100%" }}>
+                    <label>Estado de Facturación*</label>
+                    <Select
+                        placeholder="Elige un estado"
+                        style={{ width: '100%' }}
+                        value={facturacion}
+                        onChange={(value) => setFacturacion(value)}
+                    >
+                        {pago === "PAGADO" ? (
+                            <>
+                            <Option value="FACTURADO">Facturado</Option>
+                            <Option value="NOFACTURADO">No Facturado</Option>
+                            </>
+                        ) : (
+                            <Option value="NOFACTURADO">No Facturado</Option>
+                        )}
+                    </Select>
+                </div>
+                <div style={{ marginTop: '1rem',width: "100%" }}>
+                    <label>Tipo de Pago*</label>
+                    <Select
+                        placeholder="Elige un estado"
+                        style={{ width: '100%' }}
+                        value={tipoPago}
+                        onChange={(value) => setTipoPago(value)}
+                    >
+                        <Option value="EFECTIVO">Efectivo</Option>
+                        <Option value="TARJETA">Tarjeta</Option>
+                    </Select>
+                </div>
             </div>
 
             <div style={{ marginTop: '1rem' }}>
@@ -291,19 +325,6 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                             {caja.nombre}
                         </Option>
                     ))}
-                </Select>
-            </div>
-
-            <div style={{ marginTop: '1rem' }}>
-                <label>Tipo de Pago*</label>
-                <Select
-                    placeholder="Elige un estado"
-                    style={{ width: '100%' }}
-                    value={tipoPago}
-                    onChange={(value) => setTipoPago(value)}
-                >
-                    <Option value="EFECTIVO">Efectivo</Option>
-                    <Option value="TARJETA">Tarjeta</Option>
                 </Select>
             </div>
 

@@ -85,13 +85,20 @@ const NuevoEmpleadoModal: React.FC<NuevoEmpleadoModalProps> = ({ visible, onCanc
                     <Input placeholder="Escribe el nombre de usuario" />
                 </Form.Item>
 
-                <Form.Item name="nombre" label="Nombre" rules={[{ required: true, message: 'Escribe el nombre' }]}>
+                <div className="flex">
+                <Form.Item 
+                style={{width:"100%"}}
+                name="nombre" label="Nombre" rules={[{ required: true, message: 'Escribe el nombre' }]}>
                     <Input placeholder="Escribe el nombre" />
                 </Form.Item>
 
-                <Form.Item name="apellido" label="Apellido" rules={[{ required: true, message: 'Escribe el apellido' }]}>
+                <Form.Item  
+                style={{width:"100%"}}
+                name="apellido" label="Apellido" rules={[{ required: true, message: 'Escribe el apellido' }]}>
                     <Input placeholder="Escribe el apellido" />
                 </Form.Item>
+                </div>
+               
 
                 <Form.Item
                     name="email"

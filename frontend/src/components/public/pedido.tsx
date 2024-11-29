@@ -74,16 +74,21 @@ const Pedido: React.FC = () => {
       ></Button>
 
       <div style={{ padding: 20 }}>
-        <h2>Buscar Pedido</h2>
-        <Input
-          placeholder="Ingresa el código del pedido"
-          value={orderCode}
-          onChange={(e) => setOrderCode(e.target.value)}
-          style={{ width: 300, marginRight: 10 }}
-        />
-        <Button type="primary" onClick={handleSearch} loading={loading}>
-          Buscar
-        </Button>
+        <h2 style={{color: "white", fontSize:"24px", fontWeight:"400"}}>Busca tu Pedido</h2>
+        <p style={{color: "white", marginTop: "-10px", fontSize:"15px"}}>Ingresá el código de tu pedido para saber el estado</p>
+        <div style={{display:"flex", justifyContent:"space-between", marginTop: "20px"}}>
+          <Input
+            placeholder="Ingresa el código del pedido"
+            value={orderCode}
+            onChange={(e) => setOrderCode(e.target.value)}
+            style={{ width: "100%", marginRight: 10}}
+          />
+          <Button type="primary" onClick={handleSearch} loading={loading}
+          style={{ width: "40%"}}>
+            Buscar
+          </Button>
+        </div>
+       
 
         {/* Mostrar el código y el estado debajo */}
         {orderStatus && (
