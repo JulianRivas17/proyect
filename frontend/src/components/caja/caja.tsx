@@ -4,6 +4,7 @@ import { PlusCircleOutlined, MenuOutlined, LockOutlined } from '@ant-design/icon
 import { listarCajas, abrirCaja, cerrarCaja } from '../../services/cajaService'; // Asegúrate de importar el servicio correctamente
 import moment from 'moment';
 import { ColumnType } from 'antd/es/table';
+import { useNavigate } from 'react-router-dom';
 
 const { Sider, Content } = Layout;
 const { Option } = Select;
@@ -28,6 +29,9 @@ const CajaTemp: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<string>('  '); // Orden de la columna
   const [filterCaja, setFilterCaja] = useState<string>('');
   const [filterEstado, setFilterEstado] = useState<string>('');
+  const navigate = useNavigate();
+
+
   // Cargar cajas al montar el componente
   useEffect(() => {
     const fetchCajas = async () => {
@@ -42,7 +46,7 @@ const CajaTemp: React.FC = () => {
     };
 
     fetchCajas();
-  }, [sortField, sortOrder,filterCaja, filterEstado ]);
+  }, [sortField, sortOrder, filterCaja, filterEstado]);
 
 
   const loadDataCaja = async () => {
@@ -120,11 +124,11 @@ const CajaTemp: React.FC = () => {
   const handleTableChange = (field: string) => {
     const newSortOrder = sortOrder === 'ascend' ? 'descend' : 'ascend';
     console.log('Nuevo sortOrder:', newSortOrder);
-    
+
     setSortField(field);
     setSortOrder(newSortOrder);
   };
-  
+
   const columns: Array<ColumnType<Caja>> = [
     {
       title: 'Fecha',
@@ -169,7 +173,7 @@ const CajaTemp: React.FC = () => {
       dataIndex: 'total_ventas',
       sorter: true,
       render: (monto: number) => {
-        return monto != null ? monto.toFixed(2) : '0.00'; 
+        return monto != null ? monto.toFixed(2) : '0.00';
       },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('total_ventas'),
@@ -190,10 +194,25 @@ const CajaTemp: React.FC = () => {
               > Cerrar caja</Button>
             </Tooltip>
           )}
+          {record.estado === 'Cerrada' && (
+            <Tooltip title="Detalles de Venta">
+              <Button
+                type="primary"
+                onClick={() => handleDetallesVenta(record.id)} // Llama a la función para redirigir
+              >
+                Detalles de Venta
+              </Button>
+            </Tooltip>
+          )}
         </span>
+
       ),
     },
   ];
+
+  const handleDetallesVenta = (cajaId: number) => {
+    navigate(`/ventas`, { state: { cajaId } }); 
+  };
 
 
   return (
@@ -215,29 +234,29 @@ const CajaTemp: React.FC = () => {
       <Layout style={{ minHeight: '65vh', overflow: 'hidden' }}>
         <Sider width={250} className="sider">
           <Card title="Filtros" bordered={false} className="filters-card">
-          <span style={{fontSize: '13px', fontWeight: '500'}}>Estado de Caja</span>
-              <Select 
-                placeholder="Selecciona un estado"
-                value={filterEstado}
-                onChange={setFilterEstado}
-                style={{ width: '100%' }}
-                allowClear
-              >
-                <Option value="">Todos</Option>
-                <Option value="true">Abierta</Option>
-                <Option value="Cerrada">Cerrada</Option>
-              </Select>
+            <span style={{ fontSize: '13px', fontWeight: '500' }}>Estado de Caja</span>
+            <Select
+              placeholder="Selecciona un estado"
+              value={filterEstado}
+              onChange={setFilterEstado}
+              style={{ width: '100%' }}
+              allowClear
+            >
+              <Option value="">Todos</Option>
+              <Option value="true">Abierta</Option>
+              <Option value="Cerrada">Cerrada</Option>
+            </Select>
 
-            <div style={{marginTop: "15px" }}>
-            <span style={{fontSize: '13px', fontWeight: '500'}}>Nombre de caja</span>
+            <div style={{ marginTop: "15px" }}>
+              <span style={{ fontSize: '13px', fontWeight: '500' }}>Nombre de caja</span>
               <Input
                 value={filterCaja}
                 onChange={(e) => setFilterCaja(e.target.value)}
                 placeholder="Ingresa el nombre"
                 allowClear
               />
-            </div> 
-            <Button style={{marginTop: "15px" }} type="primary" className="clear-filters-button">Limpiar filtros</Button>
+            </div>
+            <Button style={{ marginTop: "15px" }} type="primary" className="clear-filters-button">Limpiar filtros</Button>
           </Card>
         </Sider>
 
@@ -251,8 +270,8 @@ const CajaTemp: React.FC = () => {
                 current: currentPage,
                 pageSize: pageSize,
                 onChange: (page, size) => {
-                    setCurrentPage(page);
-                    setPageSize(size);
+                  setCurrentPage(page);
+                  setPageSize(size);
                 },
                 showSizeChanger: true,
                 pageSizeOptions: ['5', '10', '20', '50'],
@@ -268,7 +287,7 @@ const CajaTemp: React.FC = () => {
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         onOk={handleAbrirCaja}
-        okText="Abrir caja"  
+        okText="Abrir caja"
         cancelText="Cancelar"
       >
         <div>

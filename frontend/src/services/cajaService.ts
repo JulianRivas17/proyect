@@ -120,6 +120,23 @@ export const abrirCaja = async (montoInicial: number, nombre: string) => {
     }
   };
 
+  export const obtenerCajas = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No se encontró un token de autenticación.');
+
+      const response = await axios.get(`${BASE_URL}cajas/`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+      return response.data; // Retorna el listado de cajas abiertas
+    } catch (error) {
+      console.error('Error al obtener las cajas abiertas', error);
+      throw error;
+    }
+  };
+
   export const existenCajasAbiertas = async () => {
     try {
         const token = localStorage.getItem('token');

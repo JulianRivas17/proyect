@@ -79,6 +79,18 @@ class CajaAbiertaView(APIView):
         
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+class CajaView(APIView):
+    """
+    Endpoint para obtener todas las cajas.
+    """
+    def get(self, request, *args, **kwargs):
+        cajas = Caja.objects.all()  # Obtiene todas las cajas
+        
+        serializer = CajaSerializer(cajas, many=True)  # Serializa los datos
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)  # Retorna los datos serializados
+
+    
 
 class ExistCajaAbiertaView(APIView):
     permission_classes = [IsAuthenticated]

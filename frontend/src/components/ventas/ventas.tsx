@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Button, Table, Breadcrumb, message, Modal, DatePicker, Select } from 'antd';
+import { Layout, Card, Button, Table, Breadcrumb, message, Modal, DatePicker, Select, Spin } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ExportOutlined, MenuOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import AddVentaModal from './modal/addVentaModal';
 import EditVentaModal from './modal/EditVentaModal';
 import { obtenerVentas, eliminarVenta } from '../../services/ventas_services';
-import { Caja, existenCajasAbiertas, obtenerCajasAbiertas } from '../../services/cajaService';
+import { Caja, existenCajasAbiertas, obtenerCajas, obtenerCajasAbiertas } from '../../services/cajaService';
+import { useLocation } from 'react-router-dom';
 const { Option } = Select;
 
 const { Sider, Content } = Layout;
@@ -41,12 +42,31 @@ const Ventas: React.FC = () => {
     const [estadoFilter, setEstadoFilter] = useState<string>("");
     const [key, setKey] = useState(0);
     const [cajasDisponibles, setCajasDisponibles] = useState<Caja[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const location = useLocation();
+
 
     useEffect(() => {
         fetchVentas(currentPage, pageSize);
         fetchData()
         cargarCajasAbiertas();
     }, [sortOrder, sortField, cajaFilter, turnoFilter, estadoFilter, fecha]);
+
+    useEffect(() => {
+        if (location.state && location.state.cajaId) {
+            setIsLoading(true);
+            const timeoutId = setTimeout(() => {
+                setCajaFilter(location.state.cajaId); 
+                setIsLoading(false);
+            }, 2500); 
+    
+            return () => {
+                clearTimeout(timeoutId);
+                setIsLoading(false);
+            };
+        }
+    }, [location.state]);
+    
     
     const fetchVentas = async (page = 1, pageSize = 5) => {
         try {
@@ -95,7 +115,7 @@ const Ventas: React.FC = () => {
 
     const cargarCajasAbiertas = async () => {
         try {
-            const cajas = await obtenerCajasAbiertas();
+            const cajas = await obtenerCajas();
             setCajasDisponibles(cajas); 
         } catch (error) {
             console.error('Error al obtener las cajas abiertas:', error);
@@ -180,6 +200,7 @@ const Ventas: React.FC = () => {
         setSortOrder(newSortOrder);
         fetchVentas();
     };
+    
     const columns = [
         {
             title: 'Fecha', dataIndex: 'fecha', key: 'fecha', sorter: true,
@@ -233,8 +254,8 @@ const Ventas: React.FC = () => {
         {
             title: 'Opciones', key: 'opciones', render: (_: any, record: any) => (
                 <span>
-                    <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
-                    <Button icon={<DeleteOutlined />} type="link" danger onClick={() => handleDelete(record.key)} />
+                    <Button  disabled={record.facturacion === 'FACTURADO'} icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
+                    <Button  disabled={record.facturacion === 'FACTURADO'} icon={<DeleteOutlined />} type="link" danger onClick={() => handleDelete(record.key)} />
                 </span>
             ),
         },
@@ -335,6 +356,7 @@ const Ventas: React.FC = () => {
 
                 <Layout className="layout-content">
                     <Content style={{ padding: '0px 20px', marginTop: '-20px' }}>
+                    <Spin spinning={isLoading} tip="Cargando...">
                         <Table
                             rowSelection={rowSelection}
                             columns={columns}
@@ -349,6 +371,7 @@ const Ventas: React.FC = () => {
                                 total: total,
                             }}
                         />
+                    </Spin>
                     </Content>
                 </Layout>
             </Layout>
