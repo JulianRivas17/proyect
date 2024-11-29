@@ -5,7 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from api.usuarios.serializers import UserSerializer
 from rest_framework import status
 from django.db.models import Q
-
+from rest_framework.permissions import AllowAny
+from django.utils.crypto import get_random_string
+from django.core.cache import cache
+from django.core.mail import send_mail
 class UserListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -88,3 +91,79 @@ class DeleteUserView(APIView):
             return Response({"message": "Usuario eliminado exitosamente"}, status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
             return Response({"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+class SendResetPasswordEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({"error": "El correo electrónico es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "Usuario no encontrado con ese correo."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Generar un código aleatorio
+        reset_code = get_random_string(length=6, allowed_chars='0123456789')
+        
+        # Guardar el código en la caché (con una expiración de 10 minutos)
+        cache.set(f"reset_code_{email}", reset_code, timeout=600)
+        
+        # Enviar el correo electrónico
+        send_mail(
+            subject="Código de recuperación de contraseña",
+            message=f"Tu código de recuperación es: {reset_code}",
+            from_email="no-reply@tuapp.com",
+            recipient_list=[email]
+        )
+        
+        return Response({"message": "El código de recuperación ha sido enviado al correo electrónico."}, status=status.HTTP_200_OK)
+
+
+class ValidateResetCodeView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        code = request.data.get('code')
+
+        if not email or not code:
+            return Response({"error": "El correo y el código son obligatorios."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Recuperar el código de la caché
+        cached_code = cache.get(f"reset_code_{email}")
+        if not cached_code:
+            return Response({"error": "El código ha expirado o es inválido."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if cached_code != code:
+            return Response({"error": "El código proporcionado es incorrecto."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Si el código es válido, eliminarlo de la caché para evitar reutilización
+        cache.delete(f"reset_code_{email}")
+
+        return Response({"message": "Código validado correctamente."}, status=status.HTTP_200_OK)
+
+
+class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        new_password = request.data.get('new_password')
+        confirm_password = request.data.get('confirm_password')
+
+        if not email or not new_password or not confirm_password:
+            return Response({"error": "Todos los campos son obligatorios."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if new_password != confirm_password:
+            return Response({"error": "Las contraseñas no coinciden."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "La contraseña se ha restablecido correctamente."}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "Usuario no encontrado con ese correo."}, status=status.HTTP_404_NOT_FOUND)

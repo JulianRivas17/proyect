@@ -97,6 +97,14 @@ SIMPLE_JWT = {
     'SIGNING_KEY': 'your-secret-key',  # Reemplaza por una clave secreta segura
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Cambia esto si usas otro proveedor (ejemplo: smtp.office365.com)
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rivasjulian21@gmail.com'
+EMAIL_HOST_PASSWORD = 'rhkzxmkmlmylhcox'
+
+
 WSGI_APPLICATION = 'api.wsgi.application'
 
 MEDIA_URL = '/media/'

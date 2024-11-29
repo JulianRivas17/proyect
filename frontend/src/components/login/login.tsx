@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Field, Form } from 'formik';
 import { Button, Input, message } from 'antd';
 import './login.css';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [mensaje, setMensaje] = useState<boolean>(false);
 
   return (
     <div className="login-page">
@@ -20,10 +21,12 @@ const Login = () => {
             try {
               const data = await loginUser(values.username, values.password);
               localStorage.setItem('token', data.access);
+              setMensaje(false);
               message.success('Inicio de sesión exitoso');
               navigate('/dashboard');
             } catch (error) {
               message.error('Error al iniciar sesión, verifica tus credenciales');
+              setMensaje(true);
             }
           }}
         >
@@ -44,6 +47,14 @@ const Login = () => {
                     <Input.Password {...field} placeholder="Ingresa tu contraseña" />
                   )}
                 </Field>
+                {mensaje && (
+                  <div className="extra-options">
+                    <p>
+                      ¿Olvidaste tu contraseña?{" "}
+                      <a href="/recuperar">Recuperar contraseña</a>
+                    </p>
+                  </div>
+                )}
               </div>
               <Button type="primary" htmlType="submit" className="submit-button">Iniciar Sesión</Button>
             </Form>

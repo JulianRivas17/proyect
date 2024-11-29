@@ -115,3 +115,73 @@ export const getUserIdFromToken = (): number | null => {
   }
   return null;
 }
+
+export const actualizarContrasena = async (
+  email: string,
+  newPassword: string,
+  confirmPassword: string
+) => {
+  try {
+    const response = await fetch(`${API_URL}/usuarios/reset`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, new_password: newPassword, confirm_password: confirmPassword }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error al actualizar la contraseña");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error en actualizarContrasena:", error.message);
+    throw error;
+  }
+};
+
+export const validarCodigo = async (email: string, code: string) => {
+  try {
+    const response = await fetch(`${API_URL}/usuarios/validate-code`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, code }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error al validar el código");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error en validarCodigo:", error.message);
+    throw error;
+  }
+};
+
+export const enviarCodigo = async (email: string) => {
+  try {
+    const response = await fetch(`${API_URL}/usuarios/send-code`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error al enviar el código");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error en enviarCodigo:", error.message);
+    throw error;
+  }
+};

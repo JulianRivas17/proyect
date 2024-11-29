@@ -13,11 +13,12 @@ import LandingPage from '../components/public/landingPage';
 import ViewProduct from '../components/public/viewProduct';
 import Cart from '../components/public/cart';
 import Pedido from '../components/public/pedido';
+import Recuperar from '../components/recuperar/recuperar';
 
 const AppRoutes = () => {
   const location = useLocation();
 
-  const hideHeaderPaths = ['/', '/register', '/landing', '/viewProduct', '/cart', '/pedido'];
+  const hideHeaderPaths = ['/', '/register', '/landing', '/viewProduct', '/cart', '/pedido', '/recuperar'];
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
 
   useEffect(() => {
@@ -38,6 +39,7 @@ const AppRoutes = () => {
       <Routes>
         {/* Rutas públicas */}
         <Route path="/register" element={<Register />} />
+        <Route path="/recuperar" element={<Recuperar />} />
         <Route path="/" element={<Login />} />
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/viewProduct" element={<ViewProduct />} />
