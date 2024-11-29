@@ -116,7 +116,8 @@ const Productos: React.FC = () => {
             onHeaderCell: () => ({
               onClick: () => handleSort({ field: 'precio_prod', order: sortOrder === 'ascend' ? 'descend' : 'ascend' }),  // Llamar a la función de ordenación
             }),
-          },
+            render: (text: number) => `$${text.toFixed(2)}`,  // Mostrar el valor como $ y con 2 decimales
+          },          
           {
             title: 'Categoría',
             dataIndex: 'category',

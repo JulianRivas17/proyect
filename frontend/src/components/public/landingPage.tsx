@@ -41,6 +41,7 @@ const LandingPage: React.FC = () => {
       const filtros = {}
       const productos = await obtenerProductos(filtros);
       setProdutos(productos);
+      console.log("productos",productos )
     } catch (error) {
       message.error("Error al cargar los productos");
     }
@@ -60,7 +61,7 @@ const LandingPage: React.FC = () => {
   };
 
   const productosEspecialidades = productos.filter(
-    (producto) => producto.category === "Especialidades"
+    (producto) => producto.category === "ESPECIALIDADES"
   );
 
   const gruposDeProductos = chunkArray(productosEspecialidades, 3);
@@ -217,7 +218,7 @@ const LandingPage: React.FC = () => {
           <h2 className="title-section-menu">Principales</h2>
           {/* Contenido de "Combos" */}
           {productos
-            .filter((producto) => producto.category === "Principales")
+            .filter((producto) => producto.category === "PRINCIPALES")
             .map((producto) => {
               const urlImagen = obtenerURLImagen(
                 producto.image_url
@@ -258,7 +259,7 @@ const LandingPage: React.FC = () => {
           <h2 className="title-section-menu">Postres</h2>
           {/* Contenido de "Especiales" */}
           {productos
-            .filter((producto) => producto.category === "Postres")
+            .filter((producto) => producto.category === "POSTRES")
             .map((producto) => {
               const urlImagen = obtenerURLImagen(
                 producto.image_url
@@ -299,7 +300,7 @@ const LandingPage: React.FC = () => {
           <h2 className="title-section-menu">Bebidas</h2>
           {/* Contenido de "Bebidas" */}
           {productos
-            .filter((producto) => producto.category === "Bebidas")
+            .filter((producto) => producto.category === "BEBIDAS")
             .map((producto) => {
               const urlImagen = obtenerURLImagen(
                 producto.image_url
