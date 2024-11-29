@@ -19,7 +19,7 @@ import {
 import "./landing.css";
 import iconBrunnete from "../../assets/images/cocinero.png";
 import { useCart } from "./CartContext";
-import { crearVenta, VentaData } from "../../services/ventas_services";
+import { crearVenta, crearVentaCarrito, VentaData } from "../../services/ventas_services";
 
 const { Footer } = Layout;
 
@@ -154,7 +154,7 @@ const Cart: React.FC = () => {
     };
 
     try {
-      crearVenta(ventaData);
+      crearVentaCarrito(ventaData);
       console.log("Venta creada con éxito");
     } catch (error) {
       message.error("Error al crear la venta. Intenta nuevamente.");

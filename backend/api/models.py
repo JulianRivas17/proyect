@@ -12,8 +12,8 @@ class Venta(models.Model):
     facturacion = models.CharField(max_length=100, default="")
     nombre_venta = models.CharField(max_length=100, default="")
     caja_id = models.IntegerField(null=True)
-    tipoPago = models.CharField(max_length=100, default="")
-    codeOrder = models.CharField(max_length=100, default="")
+    tipo_pago = models.CharField(max_length=100, null=True)
+    code_order = models.CharField(max_length=100,null=True)
     def __str__(self):
         return f"Venta {self.id} - {self.fecha}"
 
@@ -47,6 +47,8 @@ class Caja(models.Model):
     usuario_cierre = models.ForeignKey(User, related_name='cierre_cajas', on_delete=models.SET_NULL, null=True, blank=True)
     nombre = models.CharField(max_length=500, default="")
     total_ventas = models.IntegerField(null=True)
+    total_ventas_tarjetas = models.IntegerField(null=True)
+    total_ventas_efectivo = models.IntegerField(null=True)
     def __str__(self):
         estado = "Abierta" if self.estado_caja else "Cerrada"
         return f"Caja {self.id} - Estado: {estado}"

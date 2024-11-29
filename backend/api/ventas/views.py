@@ -102,3 +102,23 @@ class VentaDetailUpdateView(generics.RetrieveUpdateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class VentaSearchViewCode(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, *args, **kwargs):
+        # Obtener el parámetro 'code_order' de la query string
+        code_order = request.query_params.get('code_order', None)
+
+        if not code_order:
+            return Response({"error": "El código de pedido es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Filtrar las ventas por el código de pedido
+            venta = Venta.objects.get(code_order=code_order)
+            # Serializar los datos de la venta encontrada
+            serializer = VentaSerializer(venta)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Venta.DoesNotExist:
+            return Response({"error": "Pedido no encontrado."}, status=status.HTTP_404_NOT_FOUND)  

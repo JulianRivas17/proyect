@@ -1,11 +1,22 @@
+// src/components/Pedido.tsx
 import React, { useState } from "react";
 import { Layout, Input, Button, message, Card } from "antd";
 import { useNavigate } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
+
 import "./landing.css";
 import iconBrunnete from "../../assets/images/cocinero.png";
+import { getOrderStatus } from "../../services/ventas_services";
 
 const { Footer } = Layout;
+
+const estadoPedidoOptions: { [key in 'ENESPERA' | 'ENPROCESO' | 'ENTREGADO' | 'LISTO']: string } = {
+  'ENESPERA': 'En espera',
+  'ENPROCESO': 'En proceso',
+  'ENTREGADO': 'Entregado',
+  'LISTO': 'Listo para entregar'
+};
+
 
 const Pedido: React.FC = () => {
   const [orderCode, setOrderCode] = useState<string>("");
@@ -18,11 +29,6 @@ const Pedido: React.FC = () => {
     navigate("/landing");
   };
 
-  const mockOrders = [
-    { code: "orden-Ani0010", status: "En proceso" },
-    { code: "orden-Juan0023", status: "Enviado" },
-  ];
-
   const handleSearch = async () => {
     if (!orderCode.trim()) {
       message.error("Por favor ingresa un código de pedido.");
@@ -31,16 +37,20 @@ const Pedido: React.FC = () => {
 
     setLoading(true);
 
-    // Aquí debes hacer la búsqueda real. Por ahora usaremos un código simulado.
-    setTimeout(() => {
-      // Simulamos una búsqueda exitosa de un pedido
-      if (orderCode === "orden-Ani0010") {
-        setOrderStatus("Pedido confirmado y en proceso");
+    try {
+      const data = await getOrderStatus(orderCode); // Llamada al servicio
+      if (data) {
+        const translatedStatus = estadoPedidoOptions[data.estado_pedido as keyof typeof estadoPedidoOptions];
+        setOrderStatus(translatedStatus || "Estado desconocido");
       } else {
         setOrderStatus("Pedido no encontrado");
       }
-      setLoading(false);
-    }, 1000); // Simulación de retraso (en un caso real usarías una API)
+    } catch (error) {
+      message.error("Error al buscar el pedido.");
+      setOrderStatus(null);
+    }
+
+    setLoading(false);
   };
 
   return (

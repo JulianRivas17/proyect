@@ -66,7 +66,9 @@ const CajaTemp: React.FC = () => {
       montoIni: parseFloat(caja.monto_inicial_caja),
       montoFin: caja.total_saldo_caja ? parseFloat(caja.total_saldo_caja) : 0,
       id: caja.id,
-      total_ventas: caja.total_ventas
+      total_ventas: caja.total_ventas,
+      total_ventas_efectivo: caja.total_ventas_efectivo,
+      total_ventas_tarjetas: caja.total_ventas_tarjetas
     }));
     setCajas(formattedData);
   }
@@ -154,7 +156,9 @@ const CajaTemp: React.FC = () => {
       title: 'Monto Inicial',
       dataIndex: 'montoIni',
       sorter: true,
-      render: (monto: number) => monto.toFixed(2),
+      render: (monto: number) => {
+        return monto != null ? monto.toFixed(2) : '0.00';
+      },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('monto_inicial_caja'),
       }),
@@ -163,7 +167,9 @@ const CajaTemp: React.FC = () => {
       title: 'Monto Final',
       dataIndex: 'montoFin',
       sorter: true,
-      render: (monto: number) => monto.toFixed(2),
+      render: (monto: number) => {
+        return monto != null ? monto.toFixed(2) : '0.00';
+      },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('total_saldo_caja'),
       }),
@@ -177,6 +183,28 @@ const CajaTemp: React.FC = () => {
       },
       onHeaderCell: () => ({
         onClick: () => handleTableChange('total_ventas'),
+      }),
+    },
+    {
+      title: 'Total ventas efectivo',
+      dataIndex: 'total_ventas_efectivo',
+      sorter: true,
+      render: (monto: number) => {
+        return monto != null ? monto.toFixed(2) : '0.00';
+      },
+      onHeaderCell: () => ({
+        onClick: () => handleTableChange('total_ventas_efectivo'),
+      }),
+    },
+    {
+      title: 'Total ventas tarjeta',
+      dataIndex: 'total_ventas_tarjetas',
+      sorter: true,
+      render: (monto: number) => {
+        return monto != null ? monto.toFixed(2) : '0.00';
+      },
+      onHeaderCell: () => ({
+        onClick: () => handleTableChange('total_ventas_tarjetas'),
       }),
     },
     {

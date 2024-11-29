@@ -69,7 +69,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             setEstadoPedido(venta.estado_pedido);  // Cargar el estado del pedido
             setPago(venta.pago);  // Cargar el estado de pago
             setFacturacion(venta.facturacion);  // Cargar el estado de facturación
-            setTipoPago(venta.tipoPago);  // Cargar el estado de facturación
+            setTipoPago(venta.tipo_pago);  // Cargar el estado de facturación
             setNombreCliente(venta.nombre_venta)
             const productosConPrecio: Producto[] = venta.productos.map((prod: any) => {
                 return {
@@ -137,7 +137,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
             estado_pedido: estadoPedido,
             pago,
             facturacion,
-            tipoPago,
+            tipo_pago: tipoPago,
             nombre_venta: nombreCliente,
             caja_id: selectedCajaId
         };
@@ -248,6 +248,7 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     <Option value="ENESPERA">En espera</Option>
                     <Option value="ENPROCESO">En progreso</Option>
                     <Option value="ENTREGADO">Entregado</Option>
+                    <Option value="LISTO">Listo para entrega</Option>
                 </Select>
             </div>
 
@@ -301,8 +302,8 @@ const EditVentaModal: React.FC<EditVentaModalProps> = ({ ventaId, onEditComplete
                     value={tipoPago}
                     onChange={(value) => setTipoPago(value)}
                 >
-                    <Option value="Efectivo">Efectivo</Option>
-                    <Option value="Tarjeta">Tarjeta</Option>
+                    <Option value="EFECTIVO">Efectivo</Option>
+                    <Option value="TARJETA">Tarjeta</Option>
                 </Select>
             </div>
 

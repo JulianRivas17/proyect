@@ -176,10 +176,11 @@ const Ventas: React.FC = () => {
         fetchVentas(currentPage, pageSize);
     };
 
-    const estadoPedidoOptions: { [key in 'ENESPERA' | 'ENPROCESO' | 'ENTREGADO']: string } = {
+    const estadoPedidoOptions: { [key in 'ENESPERA' | 'ENPROCESO' | 'ENTREGADO' | 'LISTO']: string } = {
         'ENESPERA': 'En espera',
         'ENPROCESO': 'En proceso',
         'ENTREGADO': 'Entregado',
+        'LISTO': 'Listo para entregar'
     };
 
     const pagoOptions: { [key in 'PAGADO' | 'NOPAGADO']: string } = {
@@ -319,6 +320,7 @@ const Ventas: React.FC = () => {
                                 <Option value="ENESPERA">En espera</Option>
                                 <Option value="ENPROCESO">En proceso</Option>
                                 <Option value="ENTREGADO">Entregado</Option>
+                                <Option value="LISTO">Listo</Option>
                             </Select>
                         </div>
                         <div style={{ marginTop: "15px" }}>

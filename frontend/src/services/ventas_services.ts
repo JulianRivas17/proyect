@@ -20,7 +20,7 @@ export interface VentaData {
     facturacion: string;
     nombreCliente: string;
     cajaId: number | null;
-    orderCode: string;
+    orderCode: string | null;
     tipoPago: string
 }
 
@@ -33,7 +33,7 @@ export const crearVenta = async (ventaData: VentaData) => {
             fecha: ventaData.fecha ? ventaData.fecha.format('YYYY-MM-DD') : null,
             hora_venta: dayjs().format('HH:mm:ss'), // Hora actual
             productos: ventaData.productos.map(p => ({
-                producto: p.id, // ID del producto
+                producto: p.id, 
                 cantidad: p.cantidad,
             })),
             turno: ventaData.turno,
@@ -43,7 +43,41 @@ export const crearVenta = async (ventaData: VentaData) => {
             facturacion: ventaData.facturacion,
             nombre_venta: ventaData.nombreCliente,
             caja_id: ventaData.cajaId,
-            tipoPago: ventaData.tipoPago
+            tipo_pago: ventaData.tipoPago,
+        };
+
+        // No enviar encabezados si no es necesario
+        const response = await axios.post(
+            `${BASE_URL_2}ventas/crear-venta/`,
+            payload
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error("Error al crear la venta:", error);
+        throw error;
+    }
+};
+
+export const crearVentaCarrito = async (ventaData: VentaData) => {
+    try {
+        // Generar el payload para la solicitud
+        const payload = {
+            fecha: ventaData.fecha ? ventaData.fecha.format('YYYY-MM-DD') : null,
+            hora_venta: dayjs().format('HH:mm:ss'), // Hora actual
+            productos: ventaData.productos.map(p => ({
+                producto: p.id, 
+                cantidad: p.cantidad,
+            })),
+            turno: ventaData.turno,
+            monto_total: ventaData.montoTotal,
+            estado_pedido: ventaData.estadoPedido,
+            pago: ventaData.pago,
+            facturacion: ventaData.facturacion,
+            nombre_venta: ventaData.nombreCliente,
+            caja_id: ventaData.cajaId,
+            tipo_pago: ventaData.tipoPago,
+            code_order: ventaData.orderCode
         };
 
         // No enviar encabezados si no es necesario
@@ -214,3 +248,11 @@ export const editarVenta = async (id: number, ventaData: any) => {
     }
 };
 
+export const getOrderStatus = async (orderCode: string) => {
+    try {
+      const response = await axios.get(`${BASE_URL_2}ventas/listar-ventas-code?code_order=${orderCode}`);
+      return response.data; // Devuelve los datos de la respuesta (por ejemplo, el estado del pedido)
+    } catch (error) {
+      throw new Error("Error al obtener el estado del pedido");
+    }
+  };
